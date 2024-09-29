@@ -27,6 +27,7 @@ class AuthController {
   async otpVerificationAndSignup(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { userData, otp } = req.body;
+      console.log("This is body: ", req.body)
 
       if (!userData || !otp) {
         res.status(400).json({ success: false, message: "Missing user data or OTP." });
@@ -61,10 +62,13 @@ class AuthController {
 
   async login(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-        const { logData } = req.body;
+        const { email, password } = req.body;
+        const logData = {email, password}
+        console.log("This is body: ", req.body)
         const response = await this.interactor.login(logData);
-
+        console.log("This is the response from controller: ", response)
         if (!response.success) {
+            
             res.status(400).json({ success: false, message: response.message });
         } else {
             res.cookie('refreshToken', response.refreshToken, {
@@ -86,6 +90,22 @@ class AuthController {
         next(error);
     }
 }
+
+async logout(req: Request, res: Response, next: NextFunction): Promise<   void> {
+  try {
+      
+      res.clearCookie('refreshToken', {
+        httpOnly: true,
+        sameSite: true,
+        path: '/'
+       });
+       res.status(200).json({success:true, message: 'Logout successful' });
+      }catch (error) {
+       next(error);  
+  }
+}
+
+
 
 }
 

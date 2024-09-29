@@ -17,7 +17,9 @@ const controller = new AuthController(userAuthInteractor);
 
 userAuthRouter.post('/sendotp', controller.sendOtpController.bind(controller));
 userAuthRouter.post('/signup/verify-otp', controller.otpVerificationAndSignup.bind(controller));
-userAuthRouter.post('/login',controller.login.bind(controller))
+userAuthRouter.post('/login',controller.login.bind(controller));
+userAuthRouter.get('/logout',controller.logout.bind(controller));
+
 
 
 export default userAuthRouter;

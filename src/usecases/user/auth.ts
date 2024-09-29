@@ -78,6 +78,7 @@ class UserAuthInteractor implements IUserAuthInteractor {
     console.log(userData);
         
     const response = await this.userRepository.login(userData)
+    console.log("This is the response from interctor : ",response)
     if (!response.success) {
         if (response.message === "wrong email") {
             return response
