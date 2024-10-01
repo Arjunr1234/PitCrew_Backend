@@ -7,4 +7,5 @@ const userRoute = express.Router();
 
 userRoute.use('/auth', userAuthRouter);
 
+
 export default userRoute;

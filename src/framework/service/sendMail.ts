@@ -1,5 +1,4 @@
 import nodemailer from 'nodemailer';
-//import { Mailer } from '../../entities/services/mailer';
 import dotenv from 'dotenv';
 import { Mailer } from '../../entities/services/iMailer';
 
@@ -7,12 +6,12 @@ dotenv.config();
 
 const sendMail = async (email: string, content: string): Promise<{ success: boolean }> => {
   try {
-    // Debugging: log the email and content
+    
     console.log("Sending email to:", email);
     console.log("Email content:", content);
 
     console.log("This is Mailer.email to:", process.env.MAILER_USER);
-    console.log("Email Maielr.pass :", Mailer.pass);
+    
     
     const transporter = nodemailer.createTransport({
       service: 'gmail',
