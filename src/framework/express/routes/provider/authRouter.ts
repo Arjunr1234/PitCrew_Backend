@@ -14,10 +14,14 @@ const jwt = new JwtServices(process.env.ACCESS_TOKEN_KEY as string, process.env.
 const providerAuthInteractor = new ProviderAuthInteractor(repository, mailer, jwt);
 const controller = new ProviderAuthController(providerAuthInteractor);
 
+
+
 //=============== routes ===========================//
 
-
-providerAuthRouter.post('/otp-send', controller.sendOtp.bind(controller) )
+providerAuthRouter.post('/otp-send', controller.sendOtp.bind(controller) );
+providerAuthRouter.post('/verify-otp', controller.verifyOtp.bind(controller))
+providerAuthRouter.post('/create-provider', controller.createProvider.bind(controller))
+providerAuthRouter.post('/login', controller.login.bind(controller));
 
 
  
