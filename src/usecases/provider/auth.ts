@@ -20,9 +20,10 @@ class ProviderAuthInteractor implements IProviderAuthInteractor {
       
       const providerExist = await this.providerAuthRepository.providerExist(email);
       if (!providerExist.success) {
+        console.log("user alredy exist")
         return { created: false, message: providerExist.message || "User already exists!" };
       }
-
+      
       
       const sendMail = await this.mailer.sendMail(email);
       if (!sendMail.success) {
@@ -78,6 +79,14 @@ class ProviderAuthInteractor implements IProviderAuthInteractor {
  
                 if(loginResponse.message === "Wrong password"){
                    return {success:false, message:"Incorrect password"}
+                }
+
+                if(loginResponse.message === 'blocked'){
+                  return {success:false, message:"You are blocked by Admin"}
+                }
+
+                if(loginResponse.message === 'pending'){
+                   return {success:false, message:"Plese wait Admin is Verifying your data"}
                 }
 
                 const payload = {

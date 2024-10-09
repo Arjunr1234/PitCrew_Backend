@@ -90,6 +90,14 @@ class ProviderRepository implements IproviderRepository {
       if (!passwordMatch) {
         return { success: false, message: "Wrong password" };
       }
+
+      if(!loginResponse.requestAccept){
+        return {success:false, message:"pending"}
+      }
+
+      if(loginResponse.blocked){
+        return {success:false, message:"blocked"}
+      }
   
       console.log("This is the providerResponse: ", loginResponse);
   

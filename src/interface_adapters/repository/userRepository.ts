@@ -24,6 +24,11 @@ class UserRepository implements iUserRepository {
     return !!userExist;
   }
 
+  async phoneExist(phone:string):Promise<boolean>{
+      const phoneExist = await userModel.findOne({phone:phone})
+      return !!phoneExist
+  }
+
   async otpVerification(email: string, otp: string): Promise<boolean> {
     const otpverifed = await OtpModel.findOne({ otp: otp, email: email });
     console.log("otpverfied", otpverifed);

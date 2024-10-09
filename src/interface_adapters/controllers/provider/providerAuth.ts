@@ -21,11 +21,12 @@ class ProviderAuthController {
 
       
       if (!sendOtpResponse.created) {
+        console.log("There is someting error happend")
         res.status(400).json({ success: false, message: sendOtpResponse.message });
         return;
       }
 
-      
+      console.log("otp is sended")
       res.status(200).json({ success: true, message: sendOtpResponse.message });
     } catch (error) {
       
@@ -71,8 +72,9 @@ class ProviderAuthController {
               console.log("This is the body: ",req.body);
 
              const loginResponse  = await this.providerAuthInteractor.loginUseCase(req.body);
+             
              if(!loginResponse.success){
-                res.status(400).json({success:true, message:loginResponse.message})
+                res.status(400).json({success:false, message:loginResponse.message})
              }else{
               res.cookie('refreshToken', loginResponse.refreshToken, {
                 httpOnly: true,

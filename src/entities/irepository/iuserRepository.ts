@@ -9,6 +9,7 @@ interface iUserRepository{
   otpVerification(email:string, otp:string):Promise<boolean>
   signup(userData:user):Promise<{user:userResponseData,created:boolean}>
   login(userData:userSignIn):Promise<{user?:userResponseData,success:boolean,message?:string}>
+  phoneExist(phone:string):Promise<boolean>
 
 }
 
