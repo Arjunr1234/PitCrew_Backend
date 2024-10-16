@@ -4,6 +4,9 @@ import { IAdminLoginData, IAdminLoginResponse, IProviders, userData } from "../.
 import adminModel from "../../framework/mongoose/model/adminSchema";
 import providerModel from "../../framework/mongoose/model/providerSchema";
 import userModel from "../../framework/mongoose/model/userSchema";
+import { stat } from "fs";
+import { IData } from "../../entities/iInteractor/iAdminService";
+import serviceModel from "../../framework/mongoose/model/serviceSchema";
 
 
 class AdminRepository implements IAdminRepository{
@@ -89,7 +92,8 @@ class AdminRepository implements IAdminRepository{
                 const provider:IProviders[] = await providerModel.aggregate([
                   {
                      $match:{
-                        requestAccept:false
+                        requestAccept:false,
+                        
                      }
                   },
                   {$sort:{_id:-1}},
@@ -106,7 +110,7 @@ class AdminRepository implements IAdminRepository{
                     }
                   }
                 ])
-                
+                console.log("This si the peiding provider; ", provider)
                if(!provider){
                  return {success:false, providers:[]}
                }
@@ -122,6 +126,7 @@ class AdminRepository implements IAdminRepository{
 
   async getProvidersRepo(): Promise<{ success: boolean; providers?: IProviders[] | []; message?: string; }> {
     try {
+      console.log('/////////////////////////////////////////////////////////////////////////////')
       const provider: IProviders[] = await providerModel.aggregate([
         {
           $match: {
@@ -142,11 +147,11 @@ class AdminRepository implements IAdminRepository{
           }
         }
       ])
+      console.log("Thsi is the providers: ", provider)
 
       if (!provider) {
         return { success: false, providers: [] }
       }
-
       return { success: true, providers: provider }
 
     } catch (error: any) {
@@ -155,6 +160,67 @@ class AdminRepository implements IAdminRepository{
 
     }
   }
+
+  async providerAcceptOrRejectRepo(id: string, state: boolean): Promise<{ success: boolean; message?: string; }> {
+
+
+        try {
+            const response = await providerModel.findByIdAndUpdate(id, {$set:{requestAccept:state}})
+            if(state===null){
+              const changeisRejectedStatus = await providerModel.findByIdAndUpdate(id, {$set:{isRejected:true}}) // just updating the is rejected status
+            }
+
+            if(!response){
+              return {success:false}
+            }
+            return {success:true}
+          
+        } catch (error:any) {
+            return {success:false, message:"something error happend!!"}
+          
+        }
+  }
+
+  
+
+    async providerBlockAndUnblockUseCase(id: string, state: boolean): Promise<{ success: boolean; message?: string; }> {
+               
+           try {
+
+            const repsonse = await providerModel.findByIdAndUpdate(id, {$set:{blocked:state}});
+           if(!response){
+              return {success:false}
+           }
+           return{success:true}
+            
+           } catch (error) {
+              return {success:false}
+            
+           }
+    }
+
+
+    async addServiceRepo(image: string, data: IData): Promise<{ success: boolean; message?: string; }> {
+           
+           try {
+               const {category, serviceType} = data
+               const createService = await serviceModel.create({
+                imageUrl:image,
+                category:category,
+                serviceType:serviceType,
+               })
+
+               if(!createService){
+                 return {success:false, message:"Data is not added"}
+               }
+
+               return {success:true,}
+            
+           } catch (error:any) {
+               
+               return {success:false, message:"Some error occured in add service"}
+          }
+    }
 
 
 }

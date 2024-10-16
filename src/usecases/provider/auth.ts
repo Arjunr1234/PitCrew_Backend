@@ -84,10 +84,13 @@ class ProviderAuthInteractor implements IProviderAuthInteractor {
                 if(loginResponse.message === 'blocked'){
                   return {success:false, message:"You are blocked by Admin"}
                 }
-
+                if(loginResponse.message === 'rejected'){
+                  return {success:false, message:"Sorry, your request is Rejected!!"}
+               }
                 if(loginResponse.message === 'pending'){
-                   return {success:false, message:"Plese wait Admin is Verifying your data"}
+                   return {success:false, message:"Please wait, \n Admin is Verifying your data"}
                 }
+               
 
                 const payload = {
                    _id:loginResponse.provider?._id,

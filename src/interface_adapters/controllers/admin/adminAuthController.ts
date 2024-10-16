@@ -21,14 +21,14 @@ class AdminAuthController{
         }else{
           console.log("refresh: ",loginResponse.refreshToke)
 
-          res.cookie('refreshToken', loginResponse.refreshToke, {
+          res.cookie('adminRefreshToken', loginResponse.refreshToke, {
             httpOnly: true,
             sameSite: 'strict',
             path: '/',
             maxAge: 15 * 60 * 1000, 
         });
 
-        res.cookie('accessToken', loginResponse.accessToken, {
+        res.cookie('adminAccessToken', loginResponse.accessToken, {
             httpOnly: true,
             sameSite: 'strict',
             maxAge: 7 * 24 * 60 * 60 * 1000, 

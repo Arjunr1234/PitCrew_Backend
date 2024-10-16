@@ -64,18 +64,23 @@ class UserRepository implements iUserRepository {
 
   async login(userData: userSignIn): Promise<{ user?: userResponseData; success: boolean; message?: string; }> {
       const user = await userModel.findOne({email:userData.email});
-      console.log("This is the userDAta from login: ", userData)
-      console.log(user)
+      
+
+      if(user?.blocked){
+        return {success:false, message:"You are blocked!!"}
+      }
       if(!user){
         return {success:false, message:"wrong email"}
       }
-      console.log("reeach here")
+      
       
       const passwordMatch = await bcrypt.compare(userData.password, user.password);
         
       if (!passwordMatch) {
          return {success:false, message:"wrong password"}
       }
+
+
 
       
 

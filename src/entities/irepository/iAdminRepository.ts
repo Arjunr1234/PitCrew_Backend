@@ -1,3 +1,4 @@
+import { IData } from "../iInteractor/iAdminService"
 import { IAdminLoginData, IAdminLoginResponse, IProviders, userData } from "../rules/admin"
 
 
@@ -8,6 +9,9 @@ interface IAdminRepository{
    adminBlockUnblockUser(_id:string,state:boolean):Promise<{success:boolean, message?:string}>
    getPendingProvidersRepo():Promise<{success:boolean, providers?:IProviders[] | [], message?:string}>
    getProvidersRepo():Promise<{success:boolean, providers?:IProviders[] | [], message?:string}>
+   providerAcceptOrRejectRepo(id:string, state:boolean):Promise<{success:boolean, message?:string}>
+   providerBlockAndUnblockUseCase(id:string, state:boolean):Promise<{success:boolean, message?:string}>
+   addServiceRepo(image:string, data:IData):Promise<{success:boolean, message?:string}>
 
 }
 

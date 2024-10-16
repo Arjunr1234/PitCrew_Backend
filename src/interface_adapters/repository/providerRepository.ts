@@ -77,6 +77,7 @@ class ProviderRepository implements IproviderRepository {
   
       
       const loginResponse = await providerModel.findOne({ email: email });
+      
   
      
       if (!loginResponse) {
@@ -87,10 +88,10 @@ class ProviderRepository implements IproviderRepository {
       const passwordMatch = await bcrypt.compare(password, loginResponse.password);
   
       
-      if (!passwordMatch) {
-        return { success: false, message: "Wrong password" };
+     
+      if(loginResponse.requestAccept === null){
+        return {success:false, message:"rejected"}
       }
-
       if(!loginResponse.requestAccept){
         return {success:false, message:"pending"}
       }
@@ -98,6 +99,10 @@ class ProviderRepository implements IproviderRepository {
       if(loginResponse.blocked){
         return {success:false, message:"blocked"}
       }
+      if (!passwordMatch) {
+        return { success: false, message: "Wrong password" };
+      }
+      
   
       console.log("This is the providerResponse: ", loginResponse);
   

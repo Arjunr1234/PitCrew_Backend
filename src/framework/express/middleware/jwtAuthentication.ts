@@ -29,6 +29,10 @@ const verification = (type: string): RequestHandler => {
   return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const accessToken = req.cookies?.[type + "AccessToken"];
+      console.log("arjuns cookie",req.cookies);
+      
+   //   console.log(accessToken);
+      
 
       jwt.verify(accessToken, process.env.ACCESS_TOKEN_KEY as string, async (err: any) => {
         if (err) {

@@ -28,5 +28,13 @@ export interface IProviders{
   email:string
   workshopDetals:string,
   blocked:boolean,
-  requestAccept:boolean
+  requestAccept:boolean,
+  
 }
+
+// export interface Image {
+//    id: string;
+//    url: string;
+//    createdAt: Date;
+//  }
+ 

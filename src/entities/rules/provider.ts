@@ -6,7 +6,8 @@ export interface ProviderModel {
   password: string,
   workshopDetails: IworkshopDetails, 
   blocked: boolean,
-  requestAccept: boolean
+  requestAccept: boolean,
+  
 }
 
 export interface IworkshopDetails {
@@ -43,4 +44,11 @@ export interface IProviderResponseData {
   workshopDetails: IworkshopDetails,
   blocked: boolean,
   requestAccept: boolean
+}
+
+export interface IServiceSchema{
+    category: "general" | "road",
+    serviceType: string,
+    imageUrl:string,
+    subTypes:string[]
 }

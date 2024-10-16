@@ -9,7 +9,8 @@ const providerSchema = new Schema<ProviderModel>({
     mobile: { type: String, required: true },
     workshopDetails: { type: Object, required: true },
     blocked: { type: Boolean, required: true, default: false },
-    requestAccept: { type: Boolean, required: true, default: false }
+    requestAccept: { type: Boolean, required: true, default: false },
+
 
 })
 

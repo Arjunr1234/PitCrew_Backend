@@ -8,7 +8,7 @@ class AdminProviderInteractor implements IAdminProviderInteractor{
        async  getPendingProvidersUseCase(): Promise<{ providers?: IProviders[]; success: boolean; message?: string; }> {
                
                try {
-                const response = await this.adminProviderRepo.getProvidersRepo();
+                const response = await this.adminProviderRepo.getPendingProvidersRepo();
 
                 if(!response.success){
                     return  {success:response.success, message:response.message}
@@ -25,7 +25,7 @@ class AdminProviderInteractor implements IAdminProviderInteractor{
 
         async getProvidersUseCase(): Promise<{ providers?: IProviders[]; success: boolean; message?: string; }> {
           try {
-            const response = await this.adminProviderRepo.getPendingProvidersRepo();
+            const response = await this.adminProviderRepo.getProvidersRepo();
 
             if(!response.success){
                 return  {success:response.success, message:response.message}
@@ -38,6 +38,37 @@ class AdminProviderInteractor implements IAdminProviderInteractor{
                return {success:false}
             
            }
+        }
+
+       async providerAcceptAndReject(id: string, state: boolean): Promise<{ success: boolean; message?: string; }> {
+               
+                 try {
+                   
+                  const response = await this.adminProviderRepo.providerAcceptOrRejectRepo(id, state);
+                  if(!response.success){
+                     return {success:false}
+                  }
+                  return {success:true}
+                  
+                 } catch (error) {
+                      return {success:false}
+                  
+                 }
+        }
+     async   providerBlockAndUnblockUseCase(id: string, state: boolean): Promise<{ success: boolean; message?: string; }> {
+            
+                  try {
+                    const response = await this.adminProviderRepo.providerBlockAndUnblockUseCase(id, state);
+                    if(!response.success){
+                       return{success:false}
+                    }
+                      return{success:true}
+                    
+                  } catch (error) {
+                      return {success:false, message:"something wrong happend!!"}
+                    
+                  }
+
         }
 }
 
