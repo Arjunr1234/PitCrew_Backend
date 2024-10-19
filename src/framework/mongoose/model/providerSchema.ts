@@ -11,9 +11,8 @@ const providerSchema = new Schema<ProviderModel>({
     blocked: { type: Boolean, required: true, default: false },
     requestAccept: { type: Boolean, required: true, default: false },
 
-
 })
 
-const providerModel = model("providers",providerSchema)
+const providerModel = model("providers",providerSchema);
 
 export default providerModel

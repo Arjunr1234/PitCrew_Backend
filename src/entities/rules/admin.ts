@@ -32,6 +32,11 @@ export interface IProviders{
   
 }
 
+export interface IBrands{
+   _id:string,
+   brand:string
+}
+
 // export interface Image {
 //    id: string;
 //    url: string;

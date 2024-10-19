@@ -1,5 +1,7 @@
-import { IData } from "../iInteractor/iAdminService"
-import { IAdminLoginData, IAdminLoginResponse, IProviders, userData } from "../rules/admin"
+import { IData, IServices, ISubserviceData } from "../iInteractor/iAdminService"
+import { IAdminLoginData, IAdminLoginResponse, IProviders, userData, IBrands } from "../rules/admin"
+
+
 
 
 interface IAdminRepository{
@@ -11,8 +13,15 @@ interface IAdminRepository{
    getProvidersRepo():Promise<{success:boolean, providers?:IProviders[] | [], message?:string}>
    providerAcceptOrRejectRepo(id:string, state:boolean):Promise<{success:boolean, message?:string}>
    providerBlockAndUnblockUseCase(id:string, state:boolean):Promise<{success:boolean, message?:string}>
-   addServiceRepo(image:string, data:IData):Promise<{success:boolean, message?:string}>
-
+   addServiceRepo(image:string, data:IData):Promise<{success:boolean, message?:string, service?:IServices}>
+   addBrandRepo(brand:string):Promise<{success:boolean, message?:string, brand?:IBrands}>
+   addVehicleTypeRepo(type:number):Promise<{success:boolean, message?:string}>
+   getAllBrandsRepo():Promise<{success:boolean, message?:string, brands?:IBrands[] | []}>
+   deleteBrandRepo(id:string):Promise<{success:boolean, message?:string}>
+   getAllGeneralServiceRepo():Promise<{success:boolean, message?:string, services?:IServices[] | []}>
+   getAllRoadServicesRepo():Promise<{success:boolean, message?:string, services?:IServices[] | [] }>
+   deleteServiceRepo(id:string):Promise<{success:boolean, message?:string}>
+   addSubServiceRepo(data:ISubserviceData):Promise<{success:boolean, message?:string}>
 }
 
 export default IAdminRepository
