@@ -100,6 +100,26 @@ class ProviderAuthController {
           
          }
     }
+
+    async logout(req:Request, res:Response, next:NextFunction){
+             
+              try {
+                  
+                console.log("Entered in to logout provider")
+
+                res.clearCookie('refreshToken', {
+                 httpOnly: true,
+                 sameSite: true,
+                 path: '/'
+                });
+                res.status(200).json({success:true, message:"Logout successfull!!"})
+
+              } catch (error) {
+                  next(error);
+                  
+                
+              }
+    }
 }
 
 export default ProviderAuthController;

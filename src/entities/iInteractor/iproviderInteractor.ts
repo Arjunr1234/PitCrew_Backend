@@ -8,3 +8,4 @@ export interface IProviderAuthInteractor{
       createProviderUseCase(providerData:IProviderData):Promise<{success:boolean, message:string}>
       loginUseCase(LogData:ILogData):Promise<{success:boolean, message?:string, provider?:IProviderResponseData, accessToken?:string, refreshToken?:string}>
 }
+

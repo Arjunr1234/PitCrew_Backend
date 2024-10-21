@@ -1,8 +1,10 @@
-import IproviderRepository from "../../entities/irepository/iproviderRepo";
+import IproviderRepository, { IBrandData, IServices } from "../../entities/irepository/iproviderRepo";
 import providerModel from "../../framework/mongoose/model/providerSchema";
 import OtpModel from "../../framework/mongoose/model/otpSchema";
 import { ILogData, IProviderData,IProviderResponseData } from "../../entities/rules/provider";
 import bcrypt from 'bcrypt'
+import serviceModel from "../../framework/mongoose/model/serviceSchema";
+import brandModel from "../../framework/mongoose/model/brandSchema";
 
 class ProviderRepository implements IproviderRepository {
 
@@ -124,10 +126,54 @@ class ProviderRepository implements IproviderRepository {
     }
   }
 
+
+  async getAllServicesRepo(): Promise<{ success: boolean; message?: string; services?: IServices[] | [] }> {
+    try {
+        const findAllService = await serviceModel.find({});
+
+        if (!findAllService) {
+            return { success: false, message: "Failed to find Service!!" };
+        }
+
+        const services: IServices[] = findAllService.map((service) => ({
+            id: service._id.toString(),
+            category: service.category,
+            serviceType: service.serviceType,
+            imageUrl: service.imageUrl,
+            subTypes: service.subTypes || [], 
+        }));
+
+        return { success: true, services }; 
+    } catch (error) {
+        console.log("Some error found in getAllServiceRepo: ", error);
+        return { success: false, message: "Something went wrong in getAllServiceRepo" };
+    }
+}
+
   
   
   
-  
+  async getAllBrandsRepo(): Promise<{ success: boolean; message?: string; brands?: IBrandData[] | []; }> {
+        try {
+           
+            const findingBrands = await brandModel.find({});
+            if(!findingBrands){
+               return {success:false, message:"Failed to find services!!"}
+            }
+
+            const brands : IBrandData[] = findingBrands.map((brand) => ({
+                id:brand._id.toString(),
+                brand:brand.brand
+            }))
+
+            return {success:true, brands }
+          
+        } catch (error) {
+             console.log(error)
+             return {success:false, message:"Something went wrong in getAllBrandRepo"}
+          
+        }
+  }
    
 
   

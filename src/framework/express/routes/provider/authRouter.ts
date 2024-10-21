@@ -22,6 +22,7 @@ providerAuthRouter.post('/otp-send', controller.sendOtp.bind(controller) );
 providerAuthRouter.post('/verify-otp', controller.verifyOtp.bind(controller))
 providerAuthRouter.post('/create-provider', controller.createProvider.bind(controller))
 providerAuthRouter.post('/login', controller.login.bind(controller));
+providerAuthRouter.get('/logout', controller.logout.bind(controller));
 
 
  

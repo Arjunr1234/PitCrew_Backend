@@ -5,7 +5,7 @@ import { ILogData, IProviderData, IProviderResponseData } from "../../entities/r
 import { Ijwtservices } from "../../entities/services/ijwt";
 import Imailer from "../../entities/services/iMailer";
 import UserRepository from "../../interface_adapters/repository/userRepository";
-import { log } from "console";
+
 
 class ProviderAuthInteractor implements IProviderAuthInteractor {
   constructor(

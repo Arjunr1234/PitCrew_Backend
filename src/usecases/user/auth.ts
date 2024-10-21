@@ -54,13 +54,19 @@ class UserAuthInteractor implements IUserAuthInteractor {
     if (!signup.created) {
       return { success: false, message: "Signup failed, try again" };
     }
+    console.log("This is the response of signup: ", signup)
+    const payload = {
+                     id:signup.user.id,
+                     email:signup.user.email,
+                     role:'user'
+                   }
 
     const acessToken = this.jwtServices.generateToken(
-      { user: signup.user, email: userData.email },
+      payload,
       { expiresIn: "1h" }
     );
     const refreshToken = this.jwtServices.generateRefreshToken(
-      { user: signup.user, email: userData.email },
+      payload,
       { expiresIn: "1d" }
     );
 
@@ -87,8 +93,14 @@ class UserAuthInteractor implements IUserAuthInteractor {
             return response
         }
     }
-    const acessToken = this.jwtServices.generateToken({ user: response.user, email: userData.email }, { expiresIn: '1h' })
-    const refreshToken = this.jwtServices.generateRefreshToken({ user: response.user, email: userData.email }, { expiresIn: '1d' })
+    console.log("This is the response of login: ", response)
+    const payload = {
+      id:response.user?.id,
+      email:response.user?.email,
+      role:'user'
+    }
+    const acessToken = this.jwtServices.generateToken(payload, { expiresIn: '1h' })
+    const refreshToken = this.jwtServices.generateRefreshToken(payload, { expiresIn: '1d' })
 
     return { user: response.user, success: response.success, message: response.message, accesToken: acessToken, refreshToken: refreshToken }
       
