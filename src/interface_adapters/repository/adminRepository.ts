@@ -1,6 +1,6 @@
 import { response } from "express";
 import IAdminRepository from "../../entities/irepository/iAdminRepository";
-import { IAdminLoginData, IAdminLoginResponse, IBrands, IProviders, userData } from "../../entities/rules/admin";
+import { IAdminLoginData, IAdminLoginResponse, IBrands, IProviders, ISubServiceData, userData } from "../../entities/rules/admin";
 import adminModel from "../../framework/mongoose/model/adminSchema";
 import providerModel from "../../framework/mongoose/model/providerSchema";
 import userModel from "../../framework/mongoose/model/userSchema";
@@ -9,12 +9,15 @@ import { IData, IServices, ISubserviceData } from "../../entities/iInteractor/iA
 import serviceModel from "../../framework/mongoose/model/serviceSchema";
 import brandModel from "../../framework/mongoose/model/brandSchema";
 import vehicleTypeModel from "../../framework/mongoose/model/vehicleTypeSchema";
+import providerServiceModel from "../../framework/mongoose/model/providerServiceSchema";
 
 
 class AdminRepository implements IAdminRepository{
     
     async loginRepo(loginData: IAdminLoginData): Promise<{ success: boolean; message?: string; adminData?: IAdminLoginResponse;}> {
        const {email, password} = loginData
+       
+       
        const loginResponse = await adminModel.findOne({
           email
        })
@@ -168,6 +171,8 @@ class AdminRepository implements IAdminRepository{
 
         try {
             const response = await providerModel.findByIdAndUpdate(id, {$set:{requestAccept:state}})
+            console.log("response",response);
+            
             if(state===null){
               const changeisRejectedStatus = await providerModel.findByIdAndUpdate(id, {$set:{isRejected:true}}) // just updating the is rejected status
             }
@@ -175,7 +180,18 @@ class AdminRepository implements IAdminRepository{
             if(!response){
               return {success:false}
             }
-            //   add create provider service below
+            // if admin accepiting the request automatically creating a providerservice collection
+            if (state === true) {
+              const createProviderService = await providerServiceModel.create({
+                  workshopId: response._id,  
+                  twoWheeler: [], 
+                  fourWheeler: []
+              });
+  
+              if (!createProviderService) {
+                  return { success: false, message: 'Failed to create provider service' };
+              }
+          }
 
             return {success:true}
           
@@ -184,7 +200,6 @@ class AdminRepository implements IAdminRepository{
           
         }
   }
-
   
 
     async providerBlockAndUnblockUseCase(id: string, state: boolean): Promise<{ success: boolean; message?: string; }> {
@@ -398,25 +413,30 @@ async deleteServiceRepo(id: string): Promise<{ success: boolean; message?: strin
   }
 }
 
-  async addSubServiceRepo(data: ISubserviceData): Promise<{ success: boolean; message?: string }> {
+  async addSubServiceRepo(data: ISubserviceData): Promise<{ success: boolean; message?: string, subService?:ISubServiceData }> {
     try {
       const { id, subService } = data;
+      console.log("This si subService: ", subService)
 
       if (!id || !subService) {
         return { success: false, message: "Invalid data provided" };
       }
 
-      const checkExist = await serviceModel.findOne({_id:id, subTypes:{$in:[subService]}})
+      const checkExist = await serviceModel.findOne({
+        _id: id,
+        'subTypes.type': subService, 
+      });
+       console.log("This is check exixst: ", checkExist)
       
       if (checkExist) {
         return { success: false, message: "Service already exists" };
       }
 
-      const addSubService = await serviceModel.findByIdAndUpdate(
-        id,
-        { $push: { subTypes: subService } },
-        { new: true }
-      );
+     const addSubService = await serviceModel.findByIdAndUpdate(
+                       id,
+                       {$push:{subTypes:{type:subService}}},
+                       {new:true}
+     )
 
       console.log("This is the addSubServiceRepo: ", addSubService);
 
@@ -424,7 +444,13 @@ async deleteServiceRepo(id: string): Promise<{ success: boolean; message?: strin
         return { success: false, message: "Failed to add service!!" };
       }
 
-      return { success: true };
+      const newSubService = addSubService.subTypes[addSubService.subTypes.length-1];
+      const subSerivceData:ISubServiceData = {
+         _id:newSubService._id,
+         type:newSubService.type
+      }
+
+      return { success: true, subService:subSerivceData };
 
     } catch (error) {
       console.error("Error in addSubServiceRepo: ", error);

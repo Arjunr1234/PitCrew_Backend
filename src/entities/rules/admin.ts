@@ -42,4 +42,18 @@ export interface IBrands{
 //    url: string;
 //    createdAt: Date;
 //  }
+export interface ServiceType {
+   _id:string
+   category:  "general" | "road",
+   serviceType: string
+   imageUrl:string
+   subTypes?: {_id:string,type:string}[]
+
+
+}
+
+export interface ISubServiceData{
+   _id:string,
+   type:string
+}
  

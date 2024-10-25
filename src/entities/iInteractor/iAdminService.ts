@@ -1,4 +1,5 @@
-import { IBrands } from "../rules/admin";
+import { IBrands, ISubServiceData } from "../rules/admin";
+import { subtype } from "../rules/provider";
 
 interface IAdminServiceInteractor{
   addServiceUseCase(file: Buffer, data:IData): Promise<{success:boolean, message?:string, service?:IServices}>;
@@ -9,7 +10,7 @@ interface IAdminServiceInteractor{
   getAllGeneralServiceUseCase():Promise<{success:boolean, message?:string, services?:IServices[] | []}>
   getAllRoadServiceUseCase():Promise<{success:boolean, message?:string, services?:IServices[] | []}>
   deleteServiceUseCase(id:string):Promise<{success:boolean, message?:string}>
-  addSubServiceUseCase(data:ISubserviceData):Promise<{success:boolean, message?:string,}>
+  addSubServiceUseCase(data:ISubserviceData):Promise<{success:boolean, message?:string,subService?:ISubServiceData}>
 
 }
 
@@ -28,7 +29,7 @@ export interface IServices{
     category:string,
     serviceTypes:string,
     imageUrl:string,
-    subTypes:string[]
+    subTypes:{_id:string,type:string}[]
 }
 
 

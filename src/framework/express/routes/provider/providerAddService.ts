@@ -14,12 +14,21 @@ const interactor = new ProviderAddServiceInteractor(repository);
 const controller = new ProviderAddServiceController(interactor);
 
 
-
 //================   Routes  ===================//
 
 
-providerAddServiceRouter.get('/get-all-sevices', controller.getAllServices.bind(controller));
+
+providerAddServiceRouter.get('/get-all-provider-service', controller.getAllProviderService.bind(controller));
 providerAddServiceRouter.get('/get-all-brands', controller.getAllBrands.bind(controller));
+
+providerAddServiceRouter.patch('/remove-brand',controller.removeBrand.bind(controller))
+
+providerAddServiceRouter.post('/add-brand',controller.addBrand.bind(controller));
+providerAddServiceRouter.post('/add-general-road-services', controller.addGeneralOrRoadService.bind(controller));
+providerAddServiceRouter.post('/add-general-Service', controller.addGeneralService.bind(controller))
+
+
+
 
 
 

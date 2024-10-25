@@ -2,7 +2,7 @@ import IAdminServiceInteractor, { IServices, ISubserviceData } from "../../entit
 import IAdminRepository from "../../entities/irepository/iAdminRepository";
 import { ICloudinaryService } from "../../entities/services/iCloudinary";
 import { IData } from "../../entities/iInteractor/iAdminService";
-import { IBrands } from "../../entities/rules/admin";
+import { IBrands, ISubServiceData } from "../../entities/rules/admin";
 
 class AdminServiceInteractor implements IAdminServiceInteractor{
      constructor(
@@ -159,7 +159,7 @@ async deleteServiceUseCase(id: string): Promise<{ success: boolean; message?: st
   }
 }
 
-async addSubServiceUseCase(data: ISubserviceData): Promise<{ success: boolean; message?: string }> {
+async addSubServiceUseCase(data: ISubserviceData): Promise<{ success: boolean; message?: string,subService?:ISubServiceData }> {
   try {
     
     const response = await this.AdminServiceRepository.addSubServiceRepo(data);
@@ -170,7 +170,7 @@ async addSubServiceUseCase(data: ISubserviceData): Promise<{ success: boolean; m
     }
 
     
-    return { success: true, message: "Successfully added!!" };
+    return { success: true, message: "Successfully added!!", subService:response.subService };
 
   } catch (error) {
     

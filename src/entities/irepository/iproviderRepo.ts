@@ -1,5 +1,5 @@
-import { ILogData, IProviderData,IProviderResponseData, ProviderModel } from "../rules/provider";
-
+import { IAddBrandData, IAddingData, IAdminBrand, ILogData, IProviderBrand, IProviderData,IProviderResponseData, IRemoveBrandData, ProviderModel } from "../rules/provider";
+import { Types } from "mongoose";
 
 interface IproviderRepository{
       providerExist(email:string):Promise<{success:boolean, message?:string}>
@@ -7,13 +7,45 @@ interface IproviderRepository{
       getOtp(email:string, otp:string):Promise<{success:boolean, otp?:string|undefined}>
       createProvider(providerData:IProviderData):Promise<{success:boolean, message?:string}>
       loginRepo(loginData:ILogData):Promise<{success:boolean, message?:string, provider?:IProviderResponseData}>
-      getAllServicesRepo():Promise<{success:boolean, message?:string, services?:IServices[] | []}>
-      getAllBrandsRepo():Promise<{success:boolean, message?:string, brands?:IBrandData[] | []}>
+      getAllProviderService(id:string, vehicleType:number):Promise<{success:boolean, message?:string, providerService?:IProviderServices|null,allServices?:IAllServices[]}>
+      addGeneralOrRoadService(data:IAddingData):Promise<{success:boolean, message?:string}>
+      getAllBrandsRepo(providerId:string):Promise<{success:boolean, message?:string, adminBrand?:IAdminBrand[] , providerBrand?:IProviderBrand[] | []}>
+      addBrandRepo(brandData:IAddBrandData):Promise<{success:boolean, message?:string,}>
+      removeBrandRepo(brandData:IRemoveBrandData):Promise<{success:boolean, message?:string}>
 
 }
 
+
+
+
 export default IproviderRepository
 
+
+
+
+
+export interface IAllServices {
+      _id:string
+      category:  "general" | "road",
+      serviceType: string
+      imageUrl:string
+      subTypes?: {_id:string,type:string}[]
+ }
+
+export interface IProviderServices {
+      workshopId:Types.ObjectId,
+      twoWheeler?:Service[],
+      fourWheeler?:Service[]
+    }
+
+    interface Service {
+      typeId: string;    
+      category: string;
+      subtype: Array<{
+        type: string;
+        startingPrice: number;
+      }>;
+    }
 
 export interface IServices{
      id:string,

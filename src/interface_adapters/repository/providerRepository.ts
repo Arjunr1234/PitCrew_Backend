@@ -1,10 +1,13 @@
-import IproviderRepository, { IBrandData, IServices } from "../../entities/irepository/iproviderRepo";
+import IproviderRepository, { IAllServices, IBrandData, IProviderServices, IServices } from "../../entities/irepository/iproviderRepo";
 import providerModel from "../../framework/mongoose/model/providerSchema";
 import OtpModel from "../../framework/mongoose/model/otpSchema";
-import { ILogData, IProviderData,IProviderResponseData } from "../../entities/rules/provider";
+import { IAddBrandData, IAddingData, IAdminBrand, ILogData, IProviderBrand, IProviderData,IProviderResponseData, IRemoveBrandData } from "../../entities/rules/provider";
 import bcrypt from 'bcrypt'
 import serviceModel from "../../framework/mongoose/model/serviceSchema";
 import brandModel from "../../framework/mongoose/model/brandSchema";
+import providerServiceModel from "../../framework/mongoose/model/providerServiceSchema";
+import vehicleTypeModel from "../../framework/mongoose/model/vehicleTypeSchema";
+import { response } from "express";
 
 class ProviderRepository implements IproviderRepository {
 
@@ -127,54 +130,261 @@ class ProviderRepository implements IproviderRepository {
   }
 
 
-  async getAllServicesRepo(): Promise<{ success: boolean; message?: string; services?: IServices[] | [] }> {
-    try {
-        const findAllService = await serviceModel.find({});
+  async getAllProviderService(id: string, vehicleType: number): Promise<{ success: boolean; message?: string; providerService?: IProviderServices|null; allServices?: IAllServices[]; }> {
 
-        if (!findAllService) {
-            return { success: false, message: "Failed to find Service!!" };
+    try {
+
+      const findedAllAdminService = await serviceModel.find().lean();
+
+      const providerData: IProviderServices|null = await providerServiceModel.findOne({ workshopId: id });
+
+      const services = findedAllAdminService.map((service) => ({
+        ...service,
+        _id: service._id.toString()
+      }));
+
+      return {
+        success: true,
+        message: "200",
+        providerService: providerData,
+        allServices: services,
+      }
+
+      
+    } catch (error: any) {
+      console.log("Error in getallproviderService: ", error)
+      return { success: false, message: "something went to wrong getallProviderService" }
+
+    }
+  }
+
+  
+  
+  
+  
+
+  async addGeneralOrRoadService(data: IAddingData): Promise<{ success: boolean; message?: string; }> {
+    try {
+
+        const {providerId, category, typeId, vehicleType} = data
+        console.log("This is the data: ", data)
+        
+
+        const serviceData = {
+           typeId,
+           category,
+           subType:[]
         }
 
-        const services: IServices[] = findAllService.map((service) => ({
-            id: service._id.toString(),
-            category: service.category,
-            serviceType: service.serviceType,
-            imageUrl: service.imageUrl,
-            subTypes: service.subTypes || [], 
-        }));
+        const vehicle = await vehicleTypeModel.findOne({
+           _id:vehicleType
+        })
+       
+        if(vehicle?.vehicleType === 2){
+           const provider = await providerServiceModel.findOne({
+               workshopId:providerId,
+               "twoWheeler.typeId":typeId
+           })
 
-        return { success: true, services }; 
+           if(provider){
+             const updateService = await providerServiceModel.findOneAndUpdate(
+               {workshopId:providerId, "twoWheeler.typeId":typeId},
+               {
+                 $push: { "twoWheeler.$": serviceData }, 
+               },
+               { new: true }
+             )
+             return {
+               success: true,
+               message: "Two-wheeler service updated successfully",
+             };
+             console.log("update ",updateService);
+             
+           }else{
+             const createdProvider = await providerServiceModel.findOneAndUpdate(
+               { workshopId: providerId },
+               {
+                 $push: {
+                   twoWheeler: serviceData, 
+                 },
+               },
+               { new: true, upsert: true }
+             );
+             return {
+               success: true,
+               message: " Two-wheeler service created successfully",
+             };
+             console.log("created provider",createdProvider);
+
+           }
+           
+        }else {
+         // four wheller
+
+          const provider = await providerServiceModel.findOne({
+             workshopId:providerId,
+             "fourWheeler.typeId":typeId
+          })
+          if (provider) {
+            const updateService = await providerServiceModel.findOneAndUpdate(
+              { workshopId: providerId, "fourWheeler.typeId": typeId },
+              {
+                $push: { "fourWheeler.$": serviceData },
+              },
+              { new: true }
+            )
+            return {
+              success: true,
+              message: "Four wheeler service added successfully",
+            };
+          } else {
+            const createProvider = await providerServiceModel.findOneAndUpdate(
+              { workshopId: providerId },
+              {
+                $push: {
+                  fourWheeler: serviceData,
+                },
+              },
+              { new: true, upsert: true }
+            );
+            return {
+             success: true,
+             message: "New four wheeler service created successfully",
+           };
+          }
+        }
+
+         return {success:true}
+     
     } catch (error) {
-        console.log("Some error found in getAllServiceRepo: ", error);
-        return { success: false, message: "Something went wrong in getAllServiceRepo" };
+        console.log("Error occured in addingGeneralOrRoadService: ", error)
+        return {success:false, message:"Something went wrong in addGeneralOrRoadServiceRepo"}
     }
 }
-
   
   
-  
-  async getAllBrandsRepo(): Promise<{ success: boolean; message?: string; brands?: IBrandData[] | []; }> {
-        try {
-           
-            const findingBrands = await brandModel.find({});
-            if(!findingBrands){
-               return {success:false, message:"Failed to find services!!"}
-            }
-
-            const brands : IBrandData[] = findingBrands.map((brand) => ({
-                id:brand._id.toString(),
-                brand:brand.brand
-            }))
-
-            return {success:true, brands }
-          
-        } catch (error) {
-             console.log(error)
-             return {success:false, message:"Something went wrong in getAllBrandRepo"}
-          
-        }
-  }
+async getAllBrandsRepo(providerId: string): Promise<{ 
+  success: boolean; 
+  message?: string; 
+  adminBrand?: IAdminBrand[]; 
+  providerBrand?: IProviderBrand[] | [] 
+}> {
+  try {
    
+    const findadminBrand = await brandModel.find({});
+    
+    
+    const provider = await providerModel.findOne(
+      { _id: providerId }, 
+      { _id: 0, supportedBrands: 1 }
+    );
+
+   
+    const adminBrand = findadminBrand.map((brand) => ({
+      id: brand._id.toString(), 
+      brand: brand.brand
+    }));
+
+   
+    const providerBrand = provider?.supportedBrands?.length 
+      ? provider.supportedBrands.map((brand) => ({
+          brandId: brand.brandId,
+          brandName: brand.brandName
+        })) 
+      : []; 
+
+    return { 
+      success: true, 
+      message: "successful", 
+      adminBrand, 
+      providerBrand 
+    };
+
+  } catch (error) {
+    console.error("Error in getAllBrandsRepo:", error);
+    return { 
+      success: false, 
+      adminBrand: [], 
+      providerBrand: [], 
+      message: "An error occurred" 
+    };
+  }
+}
+
+
+
+  async addBrandRepo(brandData: IAddBrandData): Promise<{ success: boolean; message?: string; }> {
+    const { brandId, brandName, providerId } = brandData
+
+    try {
+
+      if (!brandId || !brandName || !providerId) {
+        return { success: false, message: "please provide Id" }
+      }
+
+      const existingProvider = await providerModel.findOne({
+        _id: providerId,
+        "supportedBrands.brandId": brandId 
+      });
+  
+      // If the brandId exists, return false with a message
+      if (existingProvider) {
+        return { success: false, message: "Brand already exists in supportedBrands" };
+      }
+
+      const response = await providerModel.findByIdAndUpdate(
+        providerId,
+        {
+          $push: { supportedBrands: { brandId, brandName } }
+        },
+        { new: true }
+      );
+
+      if (!response) {
+        return { success: false, message: "Failed to add Brand" };
+      }
+
+
+      return { success: true, message: "Brand added successfully!!" };
+
+
+    } catch (error) {
+      console.log("Error in addBrandRepo: ", error);
+      return { success: false, message: "something went wrong in addBrandRepo" }
+
+    }
+  }
+
+  async removeBrandRepo(brandData: IRemoveBrandData): Promise<{ success: boolean; message?: string; }> {
+    try {
+
+      const { brandId, providerId } = brandData
+
+      if (!brandId || !providerId) {
+        return { success: false, message: "No avaliable information updation" }
+      }
+
+      const response = await providerModel.findByIdAndUpdate(
+        providerId,
+        {
+          $pull: { supportedBrands: { brandId } }
+        },
+        { new: true }
+      );
+
+      if (!response) {
+        return { success: false, message: "Failed to Remove" }
+      }
+     
+      return { success: true, message: "Successfully removed!!" }
+
+    } catch (error) {
+      console.log("Error in removeBrandRepo: ", error);
+      return { success: false, message: "Something went wrong" }
+
+    }
+  }
+
 
   
 }

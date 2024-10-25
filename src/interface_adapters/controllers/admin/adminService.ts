@@ -192,7 +192,7 @@ async addSubServices(req: Request, res: Response, next: NextFunction) {
     }
 
     
-     res.status(200).json({ success: true, message: response.message });
+     res.status(200).json({ success: true, message: response.message, subService:response.subService });
 
   } catch (error) {
     

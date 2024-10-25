@@ -1,5 +1,5 @@
 import { IData, IServices, ISubserviceData } from "../iInteractor/iAdminService"
-import { IAdminLoginData, IAdminLoginResponse, IProviders, userData, IBrands } from "../rules/admin"
+import { IAdminLoginData, IAdminLoginResponse, IProviders, userData, IBrands, ISubServiceData } from "../rules/admin"
 
 
 
@@ -21,7 +21,9 @@ interface IAdminRepository{
    getAllGeneralServiceRepo():Promise<{success:boolean, message?:string, services?:IServices[] | []}>
    getAllRoadServicesRepo():Promise<{success:boolean, message?:string, services?:IServices[] | [] }>
    deleteServiceRepo(id:string):Promise<{success:boolean, message?:string}>
-   addSubServiceRepo(data:ISubserviceData):Promise<{success:boolean, message?:string}>
+   addSubServiceRepo(data:ISubserviceData):Promise<{success:boolean, message?:string,subService?:ISubServiceData}>
+   
 }
 
 export default IAdminRepository
+
