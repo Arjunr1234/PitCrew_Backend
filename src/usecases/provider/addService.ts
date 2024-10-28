@@ -1,34 +1,15 @@
+import { log } from "console";
 import { IProviderAddServiceInteractor } from "../../entities/iInteractor/provider/addService";
 import IproviderRepository, { IBrandData } from "../../entities/irepository/iproviderRepo";
 import { ServiceType } from "../../entities/rules/admin";
-import { IAddBrandData, IAddingData, IAdminBrand, IBrand, IProviderBrand, IProviderGeneralServiceData, IProviderRoadServiceData, IRemoveBrandData, Services } from "../../entities/rules/provider";
+import { IAddBrandData, IAddingData, IAdminBrand, IBrand, IEditSubType, IProviderBrand, IProviderGeneralServiceData, IProviderRoadServiceData, IRemoveBrandData, IRemoveService, IRemoveSubTypeData, ISubTypeData, Services } from "../../entities/rules/provider";
 
 class ProviderAddServiceInteractor implements IProviderAddServiceInteractor {
     constructor(
         private readonly AddServiceRepository: IproviderRepository
     ) {}
 
-   
-
-
-
-  // async getAllBrandsUseCase(): Promise<{ success: boolean; message?: string; brands?: IBrandData[] | []; }> {
-
-  //   try {
-  //     const response = await this.AddServiceRepository.getAllBrandsRepo();
-
-  //     if (!response.success) {
-  //       return { success: false, message: response.message }
-  //     }
-
-  //     return { success: true, brands:response.brands}
-
-  //   } catch (error) {
-  //     console.log("Error occured in getAllBrandUseCase: ", error)
-  //     return { success: false, message: "Something went wrong in getAllBrandUseCase" }
-  //   }
-
-  // }
+  
   
   async getAllProviderService(
     id: string, 
@@ -106,6 +87,7 @@ class ProviderAddServiceInteractor implements IProviderAddServiceInteractor {
             image: service.imageUrl,
             isAdded: false,
           }
+
           providerRoadService.push(roadService)
         }
       }
@@ -129,15 +111,22 @@ class ProviderAddServiceInteractor implements IProviderAddServiceInteractor {
     providerGeneralServiceData?: IProviderGeneralServiceData[], 
     providerRoadServiceData?: IProviderRoadServiceData[] 
   }> {
+  console.log("this si the adminService://////////////////////////////////////////////////",allServices)
+  const result = providerServices.find((service) => service.typeId+"" === "671a48d7b99677956e7caee4")
+  console.log("////////////////////////////////////////////: ",result)
+  console.log("This is the providerServices:  /////////////////////////////////////////////////////////////",providerServices)
+  
+
   
     const providerGeneralService: IProviderGeneralServiceData[] = [];
     const providerRoadService: IProviderRoadServiceData[] = [];
   
     if (allServices && providerServices) {
-      for (const service of allServices) {
+      for (let service of allServices) {
         if (service.category === "general") {
-          const checker = providerServices.find((item) => item.typeId + "" === service._id);
-  
+          const checker = providerServices.find((item) => item.typeId + "" === service._id+"");
+         
+         
           if (checker) {
             const generalService: IProviderGeneralServiceData = {
               typeid: service._id,
@@ -145,13 +134,18 @@ class ProviderAddServiceInteractor implements IProviderAddServiceInteractor {
               category: service.category,
               image: service.imageUrl,
               isAdded: true,
-              subType: service.subTypes?.map((item) => ({
-                isAdded: checker.subtype?.some((sub) => sub.type === item.type),
-                priceRange: checker.subtype?.find((sub) => sub.type === item.type)?.startingPrice ?? undefined,
+              subType: service.subTypes?.map((item) => ({        
+                isAdded: checker.subType?.some((sub) => sub.type+"" === item._id+""),
+                priceRange: checker.subType?.find((sub) => sub.type+"" === item._id+"")?.startingPrice ?? undefined,
                 type: item.type,
                 _id:item._id
               })) || []
+              
+              
+             
             };
+           
+            
             providerGeneralService.push(generalService);
           } else {
             const generalService: IProviderGeneralServiceData = {
@@ -163,14 +157,17 @@ class ProviderAddServiceInteractor implements IProviderAddServiceInteractor {
               subType: service.subTypes?.map((item) => ({
                 isAdded: false,
                 type: item.type,
-                _id:item._id
+                _id:item._id,
+                priceRange:undefined
+                
               })) || []
             };
+            
             providerGeneralService.push(generalService);
           }
         } else if (service.category === "road") {
           const checker = providerServices.find((item) => item.typeId + "" === service._id);
-  
+          
           if (checker) {
             const roadService: IProviderRoadServiceData = {
               typeid: service._id,
@@ -286,9 +283,55 @@ class ProviderAddServiceInteractor implements IProviderAddServiceInteractor {
         
        }
   }
-  
-    
 
+  
+  async addSubTypeUseCase(data: ISubTypeData): Promise<{ success: boolean; message?: string; }> {
+         
+          try {
+              const response = this.AddServiceRepository.addSubTypeRepo(data);
+              return response
+            
+          } catch (error) {
+              console.log("Error in addSubTypeUseCase: ",error);
+              return {success:false, message:"Something went wrong in addSubTypeUseCase"}
+            
+          }
+  }
+    
+  async removeSubTypeUseCase(data: IRemoveSubTypeData): Promise<{ success: boolean; message?: string; }> {
+        try {
+             const response = await this.AddServiceRepository.removeSubTypeRepo(data);
+             return {success:response.success, message:response.message}
+        } catch (error) {
+            console.log("Error in removeSubTypeUseCase: ",error)
+            return {success:false, message:"something went wrong in removeSubTypeUseCase"}
+        }
+  }  
+
+  async editSubTypeUseCase(data: IEditSubType): Promise<{ success: boolean; message?: string; }> {
+      try {
+          const response = await this.AddServiceRepository.editSubTypeRepo(data);
+          return response
+        
+      } catch (error) {
+           console.log("Error in editSubTypeUseCase: ",error)
+           return {success:false, message:"Something went wrong in EditSubTypeRepo"}
+      }
+  }
+
+  async removeServiceUseCase(data: IRemoveService): Promise<{ success: boolean; message?: string; }> {
+       try {
+            const response = await this.AddServiceRepository.removeServiceRepo(data);
+            return response
+        
+       } catch (error) {
+          console.log("Error in removeServiceUseCase: ",error);
+          return {success:false, message:"Something went wrong in removeServiceUseCase"}
+        
+       }
+  }
+
+  
     
 }
 

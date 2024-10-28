@@ -1,4 +1,4 @@
-import { IAddBrandData, IAddingData, IAdminBrand, ILogData, IProviderBrand, IProviderData,IProviderResponseData, IRemoveBrandData, ProviderModel } from "../rules/provider";
+import { IAddBrandData, IAddingData, IAdminBrand, IEditSubType, ILogData, IProviderBrand, IProviderData,IProviderResponseData, IRemoveBrandData, IRemoveService, IRemoveSubTypeData, ISubTypeData, ProviderModel } from "../rules/provider";
 import { Types } from "mongoose";
 
 interface IproviderRepository{
@@ -12,13 +12,24 @@ interface IproviderRepository{
       getAllBrandsRepo(providerId:string):Promise<{success:boolean, message?:string, adminBrand?:IAdminBrand[] , providerBrand?:IProviderBrand[] | []}>
       addBrandRepo(brandData:IAddBrandData):Promise<{success:boolean, message?:string,}>
       removeBrandRepo(brandData:IRemoveBrandData):Promise<{success:boolean, message?:string}>
+      addSubTypeRepo(data:ISubTypeData):Promise<{success:boolean, message?:string}>
+      removeSubTypeRepo(data:IRemoveSubTypeData):Promise<{success:boolean, message?:string}>
+      editSubTypeRepo(data:IEditSubType):Promise<{success:boolean, meessage?:string}>
+      removeServiceRepo(data:IRemoveService):Promise<{success:boolean, message?:string}>
 
 }
 
 
 
 
+
+
+
+
+
+
 export default IproviderRepository
+
 
 
 

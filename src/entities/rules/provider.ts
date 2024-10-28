@@ -1,4 +1,4 @@
-import { Types } from "mongoose"
+import { Schema, Types } from "mongoose"
 
 export interface ProviderModel {
   workshopName: string,
@@ -80,7 +80,7 @@ export  interface IProviderServiceSchema{
 }
 
 export interface subtype {
-  type: string;
+  type:Schema.Types.ObjectId;
   startingPrice: number;
 }
 
@@ -92,14 +92,14 @@ export interface IProviderGeneralServiceData{
   image:string
   category:"general"|"road"
   isAdded:boolean
-  subType?:providerServicesSubtype[] 
+  subType?:providerServicesSubtype[] |[]
 }
 
 interface providerServicesSubtype{
   _id:string
   type:string
-  isAdded:boolean
-  priceRange?:number
+  isAdded:boolean|undefined
+  priceRange?:number | undefined
 }
 
 export interface IProviderRoadServiceData{
@@ -115,13 +115,14 @@ export interface IProviderRoadServiceData{
 interface Subtype {
   type: string; 
   startingPrice: number;
+  
 }
 
 
 export interface Services {
   typeId: string; 
   category: string; 
-  subtype: Subtype[]; 
+  subType?: Subtype[]; 
 }
 
 export interface IAddingData{
@@ -165,4 +166,44 @@ export interface IAddBrandData {
 export interface IRemoveBrandData{
   brandId:string,
   providerId:string
+}
+
+//addsubType repo
+
+interface subType{
+  type:string,
+  startingPrice:number,
+  vehicleType:string
+}
+
+
+export interface ISubTypeData{
+  providerId:string,
+  serviceId:string,
+  newSubType:subType
+}
+
+/// remove subType Repo
+
+export interface IRemoveSubTypeData{
+  providerId: string,
+  serviceId:string,
+  type:string,
+  vehicleType:string
+}
+
+// edit subType
+
+export interface IEditSubType{
+  providerId:string,
+  serviceId:string,
+  subType:{type:string,startingPrice:number, vehicleType:string}
+}
+
+// remove Service
+
+export interface IRemoveService{
+  providerId:string,
+  serviceId:string,
+  vehicleType:string
 }

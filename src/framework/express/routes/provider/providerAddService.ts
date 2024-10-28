@@ -22,10 +22,15 @@ providerAddServiceRouter.get('/get-all-provider-service', controller.getAllProvi
 providerAddServiceRouter.get('/get-all-brands', controller.getAllBrands.bind(controller));
 
 providerAddServiceRouter.patch('/remove-brand',controller.removeBrand.bind(controller))
+providerAddServiceRouter.patch('/edit-subtype',controller.editSubtype.bind(controller))
+
+providerAddServiceRouter.delete('/remove-subtype', controller.removeSubType.bind(controller));
+providerAddServiceRouter.delete('/remove-service',controller.removeService.bind(controller))
 
 providerAddServiceRouter.post('/add-brand',controller.addBrand.bind(controller));
 providerAddServiceRouter.post('/add-general-road-services', controller.addGeneralOrRoadService.bind(controller));
-providerAddServiceRouter.post('/add-general-Service', controller.addGeneralService.bind(controller))
+providerAddServiceRouter.post('/add-subtype', controller.addSubType.bind(controller));
+
 
 
 

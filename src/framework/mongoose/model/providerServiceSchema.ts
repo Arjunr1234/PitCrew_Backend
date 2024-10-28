@@ -2,7 +2,7 @@ import { Schema, model , Types} from "mongoose";
 import { IProviderServiceSchema } from "../../../entities/rules/provider";
 
 const subTypeSchema = new Schema({
-   type:{type:String, required:true},
+   type:{type:Schema.Types.ObjectId, required:true},
    startingPrice:{type:String, required:true}
 });
 

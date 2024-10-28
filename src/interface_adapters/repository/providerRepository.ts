@@ -1,7 +1,7 @@
 import IproviderRepository, { IAllServices, IBrandData, IProviderServices, IServices } from "../../entities/irepository/iproviderRepo";
 import providerModel from "../../framework/mongoose/model/providerSchema";
 import OtpModel from "../../framework/mongoose/model/otpSchema";
-import { IAddBrandData, IAddingData, IAdminBrand, ILogData, IProviderBrand, IProviderData,IProviderResponseData, IRemoveBrandData } from "../../entities/rules/provider";
+import { IAddBrandData, IAddingData, IAdminBrand, IEditSubType, ILogData, IProviderBrand, IProviderData,IProviderResponseData, IRemoveBrandData, IRemoveService, IRemoveSubTypeData, ISubTypeData } from "../../entities/rules/provider";
 import bcrypt from 'bcrypt'
 import serviceModel from "../../framework/mongoose/model/serviceSchema";
 import brandModel from "../../framework/mongoose/model/brandSchema";
@@ -385,6 +385,173 @@ async getAllBrandsRepo(providerId: string): Promise<{
     }
   }
 
+  async addSubTypeRepo(data: ISubTypeData): Promise<{ success: boolean; message?: string; }> {
+    try {
+
+      const { providerId, serviceId } = data
+      const { startingPrice, type, vehicleType } = data.newSubType
+
+      if (!providerId || !serviceId || !startingPrice || !type || !vehicleType) {
+        return { success: false, message: "Please Provide the id and datas!!" }
+      }
+
+      const newData = { type, startingPrice }
+      console.log("This is adding: ////////////////////////////////////////////", newData)
+
+      if (parseInt(vehicleType) === 2) {
+        const update = await providerServiceModel.findOneAndUpdate(
+          { workshopId: providerId, "twoWheeler.typeId": serviceId },
+          { $push: { "twoWheeler.$.subType": newData } },
+          { new: true }
+        )
+        if (update) {
+          return {
+            success: true,
+            message: "Two wheeler subtype added successfully!!"
+          }
+        }
+      } else {
+        const update = await providerServiceModel.findOneAndUpdate(
+          { workshopId: providerId, "fourWheeler.typeId": serviceId },
+          { $push: { "fourWheeler.$.subType": newData } },
+          { new: true }
+        )
+        if (update) {
+          return {
+            success: true,
+            message: "Four wheeler subtype added successfully!!"
+          }
+        }
+
+      }
+      return { success: false, message: "Failed to update the service" }
+
+    } catch (error) {
+      console.log("Error in addSubType: ", error)
+      return { success: false, message: "Something went to wrong in addSubService" }
+
+    }
+
+
+  }
+
+  async removeSubTypeRepo(data: IRemoveSubTypeData): Promise<{ success: boolean; message?: string; }> {
+    try {
+      const { providerId, serviceId, vehicleType, type } = data;
+  
+      const vehicleField = vehicleType === "2" ? "twoWheeler" : "fourWheeler";
+  
+
+      const removeSubType = await providerServiceModel.updateOne(
+        { 
+          workshopId: providerId,
+          [`${vehicleField}.typeId`]: serviceId
+        },
+        { 
+          $pull: { 
+            [`${vehicleField}.$.subType`]: { type: type }
+          } 
+        }
+      );
+  
+      if (removeSubType.modifiedCount > 0) {
+        return { success: true, message: "Successfully removed!" };
+      } else {
+        return { success: false, message: "Failed to remove!" };
+      }
+  
+    } catch (error) {
+      console.error("Error in removeSubTypeRepo: ", error);
+      return { success: false, message: "Something went wrong in removeSubTypeRepo" };
+    }
+  }
+
+  
+  async editSubTypeRepo(data: IEditSubType): Promise<{ success: boolean; message?: string; }> {
+    try {
+      const { providerId, serviceId, subType } = data;
+  
+      
+      const update = parseInt(data.subType.vehicleType) === 4
+        ? await providerServiceModel.updateOne(
+            {
+              workshopId: providerId,
+              'fourWheeler.typeId': serviceId,
+              'fourWheeler.subType.type': subType.type,
+            },
+            {
+              $set: {
+                'fourWheeler.$[w].subType.$[s].startingPrice': subType.startingPrice,
+              },
+            },
+            {
+              arrayFilters: [
+                { "w.typeId": serviceId },
+                { "s.type": subType.type },
+              ],
+            }
+          )
+        : await providerServiceModel.updateOne(
+            {
+              workshopId: providerId,
+              'twoWheeler.typeId': serviceId,
+              'twoWheeler.subType.type': subType.type,
+            },
+            {
+              $set: {
+                'twoWheeler.$[w].subType.$[s].startingPrice': subType.startingPrice,
+              },
+            },
+            {
+              arrayFilters: [
+                { "w.typeId": serviceId },
+                { "s.type": subType.type },
+              ],
+            }
+          );
+  
+      if (update.modifiedCount > 0) {
+        return { success: true, message: "Successfully updated!!" };
+      } else {
+        return { success: false, message: "Failed to update" };
+      }
+    } catch (error) {
+      console.log("Error in editSubType: ", error);
+      return { success: false, message: "Something went wrong in editSubTypeRepo" };
+    }
+  }
+
+  async  removeServiceRepo(data:IRemoveService) {
+    try {
+      const { providerId, serviceId, vehicleType } = data;
+      const vehicleTypeKey = vehicleType === '2' ? "twoWheeler" : "fourWheeler";
+  
+      
+      const removeService = await providerServiceModel.updateOne(
+        { 
+          workshopId: providerId 
+        },
+        { 
+          $pull: { 
+            [vehicleTypeKey]: { typeId: serviceId } 
+          } 
+        }
+      );
+  
+      
+      if (removeService.modifiedCount > 0) {
+        return { success: true, message: "Successfully removed" };
+      } else {
+        return { success: false, message: "No matching service found to remove" };
+      }
+  
+    } catch (error) {
+      console.log("Error in removeService: ", error);
+      return { success: false, message: 'Something went wrong in removeServiceRepo' };
+    }
+  }
+  
+  
 
   
 }
