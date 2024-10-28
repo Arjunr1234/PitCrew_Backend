@@ -20,8 +20,8 @@ const controller = new AdminAuthController(adminAuthInteractor);
 
 adminAuthRouter.post('/login', controller.login.bind(controller));
 adminAuthRouter.get('/logout',controller.logout.bind(controller));
-adminAuthRouter.get('/verify-token', controller.verifiedToken.bind(controller));
-//adminAuthRouter.get('/verify-token', verification("admin"), controller.verifiedToken.bind(controller));
+//adminAuthRouter.get('/verify-token', controller.verifiedToken.bind(controller));
+
 
 
                               

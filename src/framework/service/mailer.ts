@@ -12,6 +12,23 @@ class Mailer implements Imailer{
    return {otp:otp,success:response.success}
 }
 
+  async sendRejectonMail(email: string, reason: string): Promise<{ success: boolean; message?: string; }> {
+        try {
+            const response = await sendMail(email, reason, "RejectionMail");
+            if(!response.success){
+               return {success:false, message:"Failed to send rejection mail"}
+            }
+
+            return{success:true, message:"Successfully sended the mail"}
+          
+        } catch (error) {
+            console.log("Error in sendRejction Mail: ", error)
+            return {success:false, message:'Something went wrong in sendRejectionMail'}
+        }
+  }
+
+
+
 }
 
 export default Mailer

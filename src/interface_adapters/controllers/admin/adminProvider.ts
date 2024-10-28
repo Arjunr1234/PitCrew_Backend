@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express-serve-static-core";
 import { IAdminProviderInteractor } from "../../../entities/iInteractor/iAdminProviderInteractor";
+import HttpStatus from "../../../entities/rules/statusCodes";
 
 
 class AdminProviderController {
@@ -37,9 +38,19 @@ class AdminProviderController {
   }
 
   async providerAcceptOrReject(req:Request, res:Response, next:NextFunction){
-               const {id, state} = req.body
+               const {id, state, reason,providerEmail} = req.body
            try {
-               const response = await this.adminProviderInteractor.providerAcceptAndReject(id, state);
+            const data = {
+              id,state, reason,providerEmail
+           }
+          console.log("This is the dat: //////", data)
+               if(!id  || !reason || !providerEmail){
+                   res.status(HttpStatus.BAD_REQUEST).json({success:false, message:"Please provide the necessary data"});
+                   return
+               }
+
+
+               const response = await this.adminProviderInteractor.providerAcceptAndReject(id, state, reason, providerEmail);
                if(!response.success){
                  res.status(400).json({success: false});
                  return 

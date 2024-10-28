@@ -1,17 +1,15 @@
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
 import { Mailer } from '../../entities/services/iMailer';
+import { otpTemplate, providerRejectionTemplate } from './emailTemplate';
 
 dotenv.config();
 
-const sendMail = async (email: string, content: string): Promise<{ success: boolean }> => {
+const sendMail = async (email: string, content: string,subject?:string): Promise<{ success: boolean }> => {
   try {
     
-    console.log("Sending email to:", email);
-    console.log("Email content:", content);
 
-    console.log("This is Mailer.email to:", process.env.MAILER_USER);
-    
+       
     
     const transporter = nodemailer.createTransport({
       service: 'gmail',
@@ -23,17 +21,19 @@ const sendMail = async (email: string, content: string): Promise<{ success: bool
 
 
     const mailOptions = {
-      from: process.env.MAILER_USER,  // Should match the 'user' in auth
+      from: process.env.MAILER_USER,  
       to: email,
-      subject:  'Your OTP Code' ,
-      text: content,
+      subject:subject?subject:  'PitCrew' ,
+      html: subject?providerRejectionTemplate(content):otpTemplate(content),
+      
     };
+
     
-    // Debugging: log mailOptions to check if 'to' is defined
+    
      console.log("Mail options:", mailOptions);
 
     const info = await transporter.sendMail(mailOptions);
-    console.log('Email sent:', info.response);
+    console.log('Email info.response :', info.response);
     return { success: true };
   } catch (error) {
     console.error('Error sending email:', error);

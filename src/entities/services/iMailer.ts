@@ -2,6 +2,7 @@
 
 interface Imailer{
   sendMail(email:string):Promise<{otp:string,success:boolean}>
+  sendRejectonMail(email:string, reason:string):Promise<{success:boolean, message?:string}>
 }
 
 interface mailConfig{
