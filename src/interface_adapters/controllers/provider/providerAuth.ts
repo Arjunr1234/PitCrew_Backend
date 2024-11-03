@@ -69,25 +69,26 @@ class ProviderAuthController {
     async login(req:Request, res:Response, next:NextFunction){
          try {
 
-              console.log("This is the body: ",req.body);
+           //   console.log("This is the body: ",req.body);
 
              const loginResponse  = await this.providerAuthInteractor.loginUseCase(req.body);
              
              if(!loginResponse.success){
                 res.status(400).json({success:false, message:loginResponse.message})
              }else{
-              res.cookie('refreshToken', loginResponse.refreshToken, {
+              res.cookie('providerRefreshToken', loginResponse.refreshToken, {
                 httpOnly: true,
                 sameSite: 'strict',
                 path: '/',
-                maxAge: 15 * 60 * 1000, 
+                maxAge:  7 * 24 * 60 * 60 * 1000,
             });
 
-            res.cookie('accessToken', loginResponse.accessToken, {
+            res.cookie('providerAccessToken', loginResponse.accessToken, {
                 httpOnly: true,
                 sameSite: 'strict',
-                maxAge: 7 * 24 * 60 * 60 * 1000, 
+                maxAge: 15 * 60 * 1000, 
             });
+           
 
             res.status(200).json({ provider: loginResponse.provider, success: true, message:loginResponse.message});
             
@@ -107,11 +108,16 @@ class ProviderAuthController {
                   
                 console.log("Entered in to logout provider")
 
-                res.clearCookie('refreshToken', {
+                res.clearCookie('providerRefreshToken', {
                  httpOnly: true,
                  sameSite: true,
                  path: '/'
                 });
+                res.clearCookie('providerAccessToken', {
+                  httpOnly: true,
+                  sameSite: true,
+                  path: '/'
+                 });
                 res.status(200).json({success:true, message:"Logout successfull!!"})
 
               } catch (error) {

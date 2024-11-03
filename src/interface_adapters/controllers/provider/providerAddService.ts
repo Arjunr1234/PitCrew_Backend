@@ -14,6 +14,7 @@ class ProviderAddServiceController {
   async getAllBrands(req: Request, res: Response, next: NextFunction) {
     try {
         console.log("Entered into getAllBrands");
+        console.log("This is req Object://///////////fuck:  ", req)
 
         const providerId = req.query.id
 

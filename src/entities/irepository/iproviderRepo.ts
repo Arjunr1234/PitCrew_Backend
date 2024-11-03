@@ -1,11 +1,11 @@
-import { IAddBrandData, IAddingData, IAdminBrand, IEditSubType, ILogData, IProviderBrand, IProviderData,IProviderResponseData, IRemoveBrandData, IRemoveService, IRemoveSubTypeData, ISubTypeData, ProviderModel } from "../rules/provider";
+import { IAddBrandData, IAddingData, IAdminBrand, IEditSubType, ILogData, IProviderBrand, IProviderData,IProviderRegisterData,IProviderResponseData, IRemoveBrandData, IRemoveService, IRemoveSubTypeData, ISubTypeData, ProviderModel } from "../rules/provider";
 import { Types } from "mongoose";
 
 interface IproviderRepository{
       providerExist(email:string):Promise<{success:boolean, message?:string}>
       saveOtp(otp:string, email:string):Promise<{success:boolean; message?:string}>
       getOtp(email:string, otp:string):Promise<{success:boolean, otp?:string|undefined}>
-      createProvider(providerData:IProviderData):Promise<{success:boolean, message?:string}>
+      createProvider(providerData:IProviderRegisterData):Promise<{success:boolean, message?:string}>
       loginRepo(loginData:ILogData):Promise<{success:boolean, message?:string, provider?:IProviderResponseData}>
       getAllProviderService(id:string, vehicleType:number):Promise<{success:boolean, message?:string, providerService?:IProviderServices|null,allServices?:IAllServices[]}>
       addGeneralOrRoadService(data:IAddingData):Promise<{success:boolean, message?:string}>

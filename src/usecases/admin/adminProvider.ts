@@ -51,12 +51,15 @@ class AdminProviderInteractor implements IAdminProviderInteractor{
                   if(!response.success){
                      return {success:false}
                   }
-                   const sendRejectionMail = await this.mailer.sendRejectonMail(providerEmail, reason);
+                   if(state === false){
+                    const sendRejectionMail = await this.mailer.sendRejectonMail(providerEmail, reason);
 
-                   if(!sendRejectionMail.success){
-                      return {success:false, message:response.message}
+                    if(!sendRejectionMail.success){
+                       return {success:false, message:response.message}
+                    }
                    }
-                  return {success:true, message:sendRejectionMail.message}
+                  
+                  return {success:true, message:response.message}
                   
                  } catch (error) {
                       return {success:false}

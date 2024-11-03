@@ -2,7 +2,7 @@ import express from 'express'
 import ProviderRepository from '../../../../interface_adapters/repository/providerRepository';
 import ProviderAddServiceInteractor from '../../../../usecases/provider/addService';
 import ProviderAddServiceController from '../../../../interface_adapters/controllers/provider/providerAddService';
-
+import verification from '../../middleware/jwtAuthentication';
 const providerAddServiceRouter = express.Router();
 
 
@@ -18,18 +18,18 @@ const controller = new ProviderAddServiceController(interactor);
 
 
 
-providerAddServiceRouter.get('/get-all-provider-service', controller.getAllProviderService.bind(controller));
-providerAddServiceRouter.get('/get-all-brands', controller.getAllBrands.bind(controller));
+providerAddServiceRouter.get('/get-all-provider-service',verification('provider'), controller.getAllProviderService.bind(controller));
+providerAddServiceRouter.get('/get-all-brands',verification('provider'), controller.getAllBrands.bind(controller));
 
-providerAddServiceRouter.patch('/remove-brand',controller.removeBrand.bind(controller))
-providerAddServiceRouter.patch('/edit-subtype',controller.editSubtype.bind(controller))
+providerAddServiceRouter.patch('/remove-brand',verification('provider'),controller.removeBrand.bind(controller));
+providerAddServiceRouter.patch('/edit-subtype',verification('provider'),controller.editSubtype.bind(controller));
 
-providerAddServiceRouter.delete('/remove-subtype', controller.removeSubType.bind(controller));
-providerAddServiceRouter.delete('/remove-service',controller.removeService.bind(controller))
+providerAddServiceRouter.delete('/remove-subtype',verification('provider'), controller.removeSubType.bind(controller));
+providerAddServiceRouter.delete('/remove-service',verification('provider'),controller.removeService.bind(controller));
 
-providerAddServiceRouter.post('/add-brand',controller.addBrand.bind(controller));
-providerAddServiceRouter.post('/add-general-road-services', controller.addGeneralOrRoadService.bind(controller));
-providerAddServiceRouter.post('/add-subtype', controller.addSubType.bind(controller));
+providerAddServiceRouter.post('/add-brand',verification('provider'),controller.addBrand.bind(controller));
+providerAddServiceRouter.post('/add-general-road-services',verification('provider'), controller.addGeneralOrRoadService.bind(controller));
+providerAddServiceRouter.post('/add-subtype',verification('provider'), controller.addSubType.bind(controller));
 
 
 

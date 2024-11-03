@@ -70,6 +70,7 @@ class AdminServiceController {
   async getAllBrands(req: Request, res: Response, next: NextFunction) {
 
     try {
+       console.log("This is the object://////////////////// ", req)
 
       const response = await this.AdminServiceInteractor.getAllBrandUseCase();
 

@@ -13,7 +13,7 @@ class AdminAuthController{
 
     async login(req: Request, res: Response, next: NextFunction) {
       console.log("Entered into admincontroller login");
-      console.log("This is the body: ", req.body);
+     
   
       const loginResponse = await this.AdminAuthInteractor.loginUseCase(req.body);
   
@@ -46,11 +46,16 @@ class AdminAuthController{
 
     async logout(req:Request, res:Response, next:NextFunction){
         try {
-          res.clearCookie('refreshToken', {
+          res.clearCookie('adminRefreshToken', {
             httpOnly:true,
             sameSite:true,
             path:'/'
          });
+         res.clearCookie('adminAccessToken', {
+          httpOnly:true,
+          sameSite:true,
+          path:'/'
+       });
          res.status(200).json({success:true, message: 'Logout successfull' });
           
         } catch (error) {

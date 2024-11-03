@@ -1,7 +1,7 @@
 import IproviderRepository, { IAllServices, IBrandData, IProviderServices, IServices } from "../../entities/irepository/iproviderRepo";
 import providerModel from "../../framework/mongoose/model/providerSchema";
 import OtpModel from "../../framework/mongoose/model/otpSchema";
-import { IAddBrandData, IAddingData, IAdminBrand, IEditSubType, ILogData, IProviderBrand, IProviderData,IProviderResponseData, IRemoveBrandData, IRemoveService, IRemoveSubTypeData, ISubTypeData } from "../../entities/rules/provider";
+import { IAddBrandData, IAddingData, IAdminBrand, IEditSubType, ILogData, IProviderBrand, IProviderData,IProviderRegisterData,IProviderResponseData, IRemoveBrandData, IRemoveService, IRemoveSubTypeData, ISubTypeData } from "../../entities/rules/provider";
 import bcrypt from 'bcrypt'
 import serviceModel from "../../framework/mongoose/model/serviceSchema";
 import brandModel from "../../framework/mongoose/model/brandSchema";
@@ -46,30 +46,39 @@ class ProviderRepository implements IproviderRepository {
 
   }
 
-  async createProvider(providerData: IProviderData): Promise<{ success: boolean; message?: string }> {
+  async  createProvider(providerData: IProviderRegisterData): Promise<{ success: boolean; message?: string }> {
     try {
       const saltRounds = 10;
+      const { workshopName, workshopDetails, ownerName, email, mobile, password } = providerData;
   
       
-      const hashedPassword = await bcrypt.hash(providerData.password, saltRounds);
+      const hashedPassword = await bcrypt.hash(password, saltRounds);
   
       
-      const {password, ...restProvidedData} = providerData
-      const providerCreated = await providerModel.create({
+      const providerRegisterData = {
+        workshopName,
+        ownerName,
+        email,
         password: hashedPassword,
-        ...restProvidedData,
-      });
+        mobile,
+        workshopDetails: {
+          address: workshopDetails.address,
+          location: {
+            type: "Point",
+            coordinates: [workshopDetails.coordinates.long, workshopDetails.coordinates.lat], 
+          },
+        },
+      };
   
       
+      const providerCreated = await providerModel.create(providerRegisterData);
+  
       if (!providerCreated) {
         return { success: false, message: 'Provider creation failed' };
       }
   
-      
       return { success: true };
-  
     } catch (error) {
-      
       console.error("Error in createProvider:", error);
       return { success: false, message: 'An error occurred during provider creation' };
     }

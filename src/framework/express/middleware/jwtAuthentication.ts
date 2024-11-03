@@ -15,7 +15,7 @@ const refreshAccessToken = (refreshToken: string): string | null => {
     const newAccessToken = jwt.sign(
       { userId: decoded.userId, role: decoded.role },
       process.env.ACCESS_TOKEN_KEY as string,
-      { expiresIn: '1h' } // You can adjust this as needed
+      { expiresIn: '1h' } 
     );
 
     return newAccessToken;
@@ -30,20 +30,20 @@ const verification = (type: string): RequestHandler => {
     try {
       const accessToken = req.cookies?.[`${type}AccessToken`];
 
-      // If access token is missing, check for refresh token
+      
       if (!accessToken) {
         const refreshToken = req.cookies?.[`${type}RefreshToken`];
         if (refreshToken) {
           const newAccessToken = refreshAccessToken(refreshToken);
           if (newAccessToken) {
-            // Set the new access token in cookies
+            
             res.cookie(`${type}AccessToken`, newAccessToken, {
               httpOnly: true,
               sameSite: 'strict',
               path: '/',
-              maxAge: 30 * 60 * 1000, // 30 minutes
+              maxAge: 30 * 60 * 1000,
             });
-            // After setting the new access token cookie, proceed to the next middleware
+
             req.body.userId = (jwt.decode(newAccessToken) as TokenPayload).userId;
             req.body.role = (jwt.decode(newAccessToken) as TokenPayload).role;
             return next();
@@ -56,14 +56,13 @@ const verification = (type: string): RequestHandler => {
          return
       }
 
-      // If access token is present, verify it
       jwt.verify(accessToken, process.env.ACCESS_TOKEN_KEY as string, (err: any, decoded: any) => {
         if (err) {
           const refreshToken = req.cookies?.[`${type}RefreshToken`];
           if (refreshToken) {
             const newAccessToken = refreshAccessToken(refreshToken);
             if (newAccessToken) {
-              // Set the new access token in cookies
+
               res.cookie(`${type}AccessToken`, newAccessToken, {
                 httpOnly: true,
                 sameSite: 'strict',
@@ -80,13 +79,11 @@ const verification = (type: string): RequestHandler => {
           return res.status(403).json({ message: 'Access token expired and refresh token missing.' });
         }
 
-        // Role check
         const decodedPayload = decoded as TokenPayload;
         if (decodedPayload.role !== type) {
           return res.status(403).json({ message: `Access denied for role: ${decodedPayload.role}` });
         }
 
-        // If role matches, continue
         req.body.userId = decodedPayload.userId;
         req.body.role = decodedPayload.role;
         next();

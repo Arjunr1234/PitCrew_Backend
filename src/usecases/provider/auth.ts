@@ -1,7 +1,7 @@
 import { NextFunction } from "express";
 import { IProviderAuthInteractor } from "../../entities/iInteractor/iproviderInteractor";
 import IproviderRepository from "../../entities/irepository/iproviderRepo";
-import { ILogData, IProviderData, IProviderResponseData } from "../../entities/rules/provider";
+import { ILogData, IProviderData, IProviderRegisterData, IProviderResponseData } from "../../entities/rules/provider";
 import { Ijwtservices } from "../../entities/services/ijwt";
 import Imailer from "../../entities/services/iMailer";
 import UserRepository from "../../interface_adapters/repository/userRepository";
@@ -44,6 +44,8 @@ class ProviderAuthInteractor implements IProviderAuthInteractor {
       return { created: false, message: "An error occurred while sending OTP." };
     }
   }
+
+
       async verifyOtpUseCase(email: string, otp: string): Promise<{ success: boolean; message: string; }> {
              
                const responseOtp = await this.providerAuthRepository.getOtp(email, otp);
@@ -54,7 +56,9 @@ class ProviderAuthInteractor implements IProviderAuthInteractor {
                return {success:false, message:"Verification failed!!"}
              
       }
-     async createProviderUseCase(providerData: IProviderData): Promise<{ success: boolean; message: string; }> {
+
+
+     async createProviderUseCase(providerData: IProviderRegisterData): Promise<{ success: boolean; message: string; }> {
           
          console.log(providerData)
          const createUserRepo = await this.providerAuthRepository.createProvider(providerData);
@@ -66,12 +70,13 @@ class ProviderAuthInteractor implements IProviderAuthInteractor {
            return {success:true, message:"Registered successfully!!!"}
      
      }
+     
 
       async loginUseCase(LogData: ILogData): Promise<{ success: boolean; message?: string;provider? :IProviderResponseData; accessToken?: string; refreshToken?: string;  }> {
                       
               try {
                 console.log("This is the data in loginUserCase,", LogData)
-                const loginResponse = await this.providerAuthRepository.loginRepo(LogData)
+                          const loginResponse = await this.providerAuthRepository.loginRepo(LogData)
 
                 if(loginResponse.message === "Wrong email"){
                     return {success:false, message:"Please enter a valid email!!"}

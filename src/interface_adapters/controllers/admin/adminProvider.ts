@@ -43,16 +43,17 @@ class AdminProviderController {
             const data = {
               id,state, reason,providerEmail
            }
-          console.log("This is the dat: //////", data)
+             if(state === false){
                if(!id  || !reason || !providerEmail){
                    res.status(HttpStatus.BAD_REQUEST).json({success:false, message:"Please provide the necessary data"});
                    return
                }
-
+              }
+                console.log("This is data: ",data)
 
                const response = await this.adminProviderInteractor.providerAcceptAndReject(id, state, reason, providerEmail);
                if(!response.success){
-                 res.status(400).json({success: false});
+                 res.status(400).json({success: false, message:response.message});
                  return 
                }
                res.status(200).json({success: true})
@@ -62,6 +63,8 @@ class AdminProviderController {
             
            }    
   }
+
+  
 
   async providerBlockAndUnblock(req:Request, res:Response, next:NextFunction){
             

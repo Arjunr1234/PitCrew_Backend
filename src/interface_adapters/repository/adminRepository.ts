@@ -115,6 +115,7 @@ class AdminRepository implements IAdminRepository{
                     }
                   }
                 ])
+                
                 console.log("This si the peiding provider; ", provider)
                if(!provider){
                  return {success:false, providers:[]}
@@ -170,6 +171,7 @@ class AdminRepository implements IAdminRepository{
 
 
         try {
+            
             const response = await providerModel.findByIdAndUpdate(id, {$set:{requestAccept:state}})
             console.log("response",response);
             
@@ -200,6 +202,18 @@ class AdminRepository implements IAdminRepository{
           
         }
   }
+
+  // async providerAcceptRePo(id: string, state: boolean): Promise<{ success: boolean; message?: string; }> {
+  //      try {
+  //          // const acceptProvider = await providerModel.
+  //          return {success:true}
+        
+  //      } catch (error) {
+  //          console.log("Error in providerAccetpRep: ",error);
+  //          return {success:false, message:"Something went wrong in ProviderAcceptRepo"}
+        
+  //      }
+  // }
   
 
     async providerBlockAndUnblockUseCase(id: string, state: boolean): Promise<{ success: boolean; message?: string; }> {

@@ -37,14 +37,14 @@ class AuthController {
       const response = await this.interactor.verifyAndSignup(userData, otp);
 
       if (response.success) {
-        res.cookie('refreshToken', response.refreshToken, {
+        res.cookie('userRefreshToken', response.refreshToken, {
           httpOnly: true,
           sameSite: true,
           path: '/',
-          maxAge: 15 * 60 * 1000 // 15 minutes
+          maxAge: 15 * 60 * 1000 
         });
 
-        res.cookie('accessToken', response.acessToken, { // Fixed the typo here
+        res.cookie('userAccessToken', response.acessToken, { 
           httpOnly: true,
           sameSite: true,
           maxAge: 7 * 24 * 60 * 60 * 1000 
@@ -64,24 +64,24 @@ class AuthController {
     try {
         const { email, password } = req.body;
         const logData = {email, password}
-        console.log("This is body: ", req.body)
+        
         const response = await this.interactor.login(logData);
-        console.log("This is the response from controller: ", response)
+
         if (!response.success) {
             
             res.status(400).json({ success: false, message: response.message });
         } else {
-            res.cookie('refreshToken', response.refreshToken, {
+            res.cookie('userRefreshToken', response.refreshToken, {
                 httpOnly: true,
                 sameSite: 'strict',
                 path: '/',
-                maxAge: 15 * 60 * 1000, 
+                maxAge:  7 * 24 * 60 * 60 * 1000, 
             });
 
-            res.cookie('accessToken', response.accesToken, {
+            res.cookie('userAccessToken', response.accesToken, {
                 httpOnly: true,
                 sameSite: 'strict',
-                maxAge: 7 * 24 * 60 * 60 * 1000, 
+                maxAge: 15 * 60 * 1000,
             });
 
             res.status(200).json({ user: response.user, success: true, message: "LOGGED IN" });
@@ -94,7 +94,12 @@ class AuthController {
 async logout(req: Request, res: Response, next: NextFunction): Promise<   void> {
   try {
       
-      res.clearCookie('refreshToken', {
+      res.clearCookie('userRefreshToken', {
+        httpOnly: true,
+        sameSite: true,
+        path: '/'
+       });
+       res.clearCookie('userAccessToken', {
         httpOnly: true,
         sameSite: true,
         path: '/'

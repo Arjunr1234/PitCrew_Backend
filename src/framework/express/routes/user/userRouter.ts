@@ -1,11 +1,12 @@
 import express from 'express';
 import userAuthRouter from './authRouter';
-//import userAuthRouter from './auth';
+import userServiceRoute from './userServices';
 
 const userRoute = express.Router();
 
 
 userRoute.use('/auth', userAuthRouter);
+userRoute.use('/services', userServiceRoute);
 
 
 export default userRoute;

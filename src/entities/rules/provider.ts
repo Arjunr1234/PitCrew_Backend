@@ -10,6 +10,8 @@ export interface ProviderModel {
   workshopDetails: IworkshopDetails, 
   blocked: boolean,
   requestAccept: boolean,
+  logoUrl:string,
+  about:string
   
 }
 export interface SupportedBrand {
@@ -19,9 +21,9 @@ export interface SupportedBrand {
 
 export interface IworkshopDetails {
   address: string,
-  coordinates: {
-    lattitude: number, 
-    longitude: number
+  location: {
+    type:"Point" ;
+    coordinates: [number, number];
   }
 }
 
@@ -33,6 +35,23 @@ export interface IProviderData {
   email: string,
   password: string,
   workshopDetails: IworkshopDetails
+}
+
+// This is the interface for IProviderRegistration Data
+
+export interface IProviderRegisterData{
+  workshopName: string;
+  ownerName: string;
+  mobile: string;
+  email: string;
+  password: string;
+  workshopDetails: {
+    address: string;
+    coordinates: {
+      lat: number;
+      long: number;
+    };
+  };
 }
 
 
@@ -207,3 +226,28 @@ export interface IRemoveService{
   serviceId:string,
   vehicleType:string
 }
+
+//this is the interface of Vehicle fullDetals 
+
+interface VehicleBrand {
+  brandName: string;
+  id: string;
+}
+
+interface Location {
+  place_name: string;
+  coordinates: [number, number];
+}
+
+export interface IFullDetails {
+  serviceId: string;
+  vehicleNumber: string;
+  vehicleBrand: VehicleBrand;
+  vehicleModel: string;
+  kilometers: number;
+  vehicleType: string;
+  fuelType: string;
+  location: Location;
+}
+
+

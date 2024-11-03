@@ -1,8 +1,12 @@
 import iUserRepository from "../../entities/irepository/iuserRepository";
 import userModel from "../../framework/mongoose/model/userSchema";
 import OtpModel from "../../framework/mongoose/model/otpSchema";
-import { user, userResponseData, userSignIn } from "../../entities/rules/user";
+import { IBrandData, IDetails, IProvidersData, IServiceData, user, userResponseData, userSignIn } from "../../entities/rules/user";
 import bcrypt from 'bcrypt';
+import serviceModel from "../../framework/mongoose/model/serviceSchema";
+import brandModel from "../../framework/mongoose/model/brandSchema";
+import providerModel from "../../framework/mongoose/model/providerSchema";
+import mongoose, { ObjectId } from "mongoose";
 
 class UserRepository implements iUserRepository {
 
@@ -80,10 +84,6 @@ class UserRepository implements iUserRepository {
          return {success:false, message:"wrong password"}
       }
 
-
-
-      
-
       
       const userinfo: userResponseData = {
           id: user._id.toString(),
@@ -96,6 +96,142 @@ class UserRepository implements iUserRepository {
       
       return { user: userinfo, success: true };
   }
+
+
+
+  async getAllServiceRepo(): Promise<{ success: boolean; serviceData?: IServiceData[]; message?: string }> {
+    try {
+        const getAllservice = await serviceModel.find({});
+
+        if (!getAllservice || getAllservice.length === 0) {
+            return { success: false, message: "Failed to find services" };
+        }
+
+        const data: IServiceData[] = getAllservice.map((service) => ({
+            id: service._id + "",
+            category: service.category,
+            serviceType: service.serviceType,
+            imageUrl: service.imageUrl,
+            isActive: service.isActive
+        }));
+
+        return { success: true, serviceData: data };
+    } catch (error) {
+        console.log("Error occurred in getAllServiceRepo: ", error);
+        return { success: false, message: "An error occurred while fetching services" };
+    }
+}
+
+ async getAllBrandRepo(): Promise<{ success: boolean; message?: string; brandData?: IBrandData[]; }> {
+     
+      try {
+           const response = await brandModel.find({});
+           if(!response){
+             return {success:false, message:"Failed to find!!"}
+           }
+          
+           
+           const data :IBrandData[] = response.map((brand) => ({
+                 brandName:brand.brand,
+                 id:brand._id+""
+           }))
+           console.log("This is the resposne: ", response);
+           
+           return {success:true, brandData:data}
+           
+        
+      } catch (error) {
+           console.log("Error in getAllBrandRepo: ",error)
+           return {success:false, message:"Something went wrong in getAllBrandRepo"}
+      }
+ }
+
+
+async findProvidersRepo(data: IDetails): Promise<{ success: boolean; message?: string; providersData?: IProvidersData[] | []; }> {
+  try {
+    const { serviceId, vehicleBrand, vehicleType, location } = data;
+    const { id: brandId } = vehicleBrand;  
+    const { coordinates } = location;  
+    
+    
+    
+
+    const response = await providerModel.aggregate([
+      
+      {
+        $geoNear: {
+          near: { type: "Point", coordinates: coordinates },  
+          distanceField: "distance",
+          maxDistance: 10000,  
+          spherical: true
+        }
+      },
+      {
+        $match: {
+          "supportedBrands.brandId": brandId,  
+          blocked: false
+        }
+      },
+      {
+        $lookup: {
+          from: "providerservices",
+          localField: "_id",
+          foreignField: "workshopId",
+          as: "services"
+        }
+      },
+      {
+        $match: {
+          [`services.${vehicleType}`]: { 
+            $elemMatch: {
+              "typeId":new mongoose.Types.ObjectId(serviceId.toString())
+            }
+          }
+        }
+      },
+      {
+        $project: {
+          _id:1,
+          workshopName: 1,
+          ownerName: 1,
+          workshopDetails:1,
+          email: 1,
+          mobile: 1,
+          
+        }
+      }
+    ])
+    
+    if(!response){
+       return {success:false, message:"Cannot find the Providers"}
+    }
+   
+
+    const datas :IProvidersData[] = response.map((service) => ({
+           id:service._id + "",
+           workshopName:service.workshopName,
+           ownerName:service.ownerName,
+           email:service.email,
+           mobile:service.mobile,
+           address:service.workshopDetails.address,
+           coordinates:service.workshopDetails.location.coordinates
+    }))
+    
+
+    console.log("Thisis the datas: ", datas)
+
+  
+      return {success:true, providersData:datas}
+
+     
+
+  } catch (error) {
+    console.log("Error in findProvidersRepo: ", error);
+    return { success: false, message: "Something went wrong in findProvidersRepo" };
+  }
+}
+
+
 }
 
 export default UserRepository;

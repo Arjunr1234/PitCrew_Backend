@@ -12,6 +12,7 @@ interface IAdminRepository{
    getPendingProvidersRepo():Promise<{success:boolean, providers?:IProviders[] | [], message?:string}>
    getProvidersRepo():Promise<{success:boolean, providers?:IProviders[] | [], message?:string}>
    providerAcceptOrRejectRepo(id:string, state:boolean):Promise<{success:boolean, message?:string}>
+  // providerAcceptRePo(id:string, state:boolean):Promise<{success:boolean, message?:string}>
    providerBlockAndUnblockUseCase(id:string, state:boolean):Promise<{success:boolean, message?:string}>
    addServiceRepo(image:string, data:IData):Promise<{success:boolean, message?:string, service?:IServices}>
    addBrandRepo(brand:string):Promise<{success:boolean, message?:string, brand?:IBrands}>
