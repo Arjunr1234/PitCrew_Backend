@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import iUserRepository from "../../entities/irepository/iuserRepository";
 import { IFullDetails } from "../../entities/rules/provider";
 import { IBrandData, IProvidersUseData, IServiceData } from "../../entities/rules/user";
@@ -78,6 +79,46 @@ class UserServiceInteractor implements IUserServiceInteractor{
         } catch (error) {
             console.log("Error in findProviderUseCase: ", error)
             return { success: false, message: "Something went wrong in findProvidersUseCase" }
+        }
+    }
+
+    async providerServiceViewUseCase(providerId: string, vehicleType: string, serviceId:string): Promise<{ success: boolean; message?: string;providerData?:any }> {
+        try {
+            const response = await this.userRepository.providerServiceViewRepo(providerId, vehicleType, serviceId);
+
+
+
+
+            const providerServiceData = response.providerData;
+            const serviceData = response.serviceData
+
+            providerServiceData.services.subType.forEach((subType:any) => {
+                
+                const matchingService = serviceData.subTypes.find((serviceSubType:any) =>
+                    serviceSubType._id.equals(new mongoose.Types.ObjectId(subType.type)) 
+                );
+            
+                
+                if (matchingService) {
+                    subType.type = matchingService.type; 
+                    subType.isAdded = false
+                }
+            });
+
+            if(!response.success){
+                return {success:false, message:response.message}
+            }
+            
+            
+            console.log("This is that thing ////////////////: ",JSON.stringify(providerServiceData, null, 2));
+
+
+            return {success:true, providerData:response.providerData,}
+            
+        } catch (error) {
+             console.log("Error in providerServiceVeiwUseCase: ",error);
+             return {success:false, message:"Something went wrong in providerServiceViewUseCase"}
+            
         }
     }
 

@@ -71,6 +71,30 @@ class UserServiceController{
                 
             }
         }
+
+        async providerServiceView(req:Request, res:Response, next:NextFunction){
+            try {
+                  const {providerId, vehicleType, serviceId} = req.body
+
+                  if(!providerId || !vehicleType || !serviceId){
+                    res.status(HttpStatus.BAD_REQUEST).json({success:false, message:"Please provider providerId and vehicleType and serviceId"})
+                    return
+                  }
+
+                  const response = await this.userServiceInteractor.providerServiceViewUseCase(providerId, vehicleType, serviceId);
+
+                  if(!response.success){
+                    res.status(HttpStatus.BAD_REQUEST).json({success:response.success, message:response.message});
+                  }
+
+                  res.status(HttpStatus.OK).json({success:true, providerData:response.providerData})
+                
+            } catch (error) {
+                  console.log("Error in providerServiceView Page: ", error);
+                  next(error);
+                
+            }
+        }
 }
 
 export default UserServiceController

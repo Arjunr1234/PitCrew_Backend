@@ -14,7 +14,7 @@ interface iUserRepository{
   getAllServiceRepo():Promise<{success:boolean, serviceData?:IServiceData[] , message?:string}>
   getAllBrandRepo():Promise<{success:boolean, message?:string, brandData?:IBrandData[]}>
   findProvidersRepo(data:IDetails):Promise<{success:boolean, message?:string, providersData?:IProvidersData[] | [] }>
-
+  providerServiceViewRepo(providerId:string, vehicleType:string, serviceId:string):Promise<{success:boolean, message?:string, providerData?:any, serviceData?:any}>
 }
 
 

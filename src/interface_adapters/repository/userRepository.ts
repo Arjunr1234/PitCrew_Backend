@@ -7,6 +7,7 @@ import serviceModel from "../../framework/mongoose/model/serviceSchema";
 import brandModel from "../../framework/mongoose/model/brandSchema";
 import providerModel from "../../framework/mongoose/model/providerSchema";
 import mongoose, { ObjectId } from "mongoose";
+import providerServiceModel from "../../framework/mongoose/model/providerServiceSchema";
 
 class UserRepository implements iUserRepository {
 
@@ -230,6 +231,75 @@ async findProvidersRepo(data: IDetails): Promise<{ success: boolean; message?: s
     return { success: false, message: "Something went wrong in findProvidersRepo" };
   }
 }
+
+async providerServiceViewRepo(providerId: string, vehicleType: string, serviceId:string): Promise<{ success: boolean; message?: string; providerData?: any, serviceData?:any }> {
+  try {
+      console.log("Enter in to provider ServiceVewRepo providerId and vehicleType: ", providerId, vehicleType, serviceId);
+
+
+      const findedService = await serviceModel.findOne({_id:new mongoose.Types.ObjectId(serviceId)})
+
+      const providerDetails = await providerServiceModel.aggregate([
+      
+        {
+            $match: { workshopId: new mongoose.Types.ObjectId(providerId) }
+        },
+        
+        {
+            $lookup: {
+                from: "providers",
+                localField: "workshopId",
+                foreignField: "_id",
+                as: "providerDetails"
+            }
+        },
+        
+        {
+            $unwind: "$providerDetails"
+        },
+        
+        {
+            $project: {
+              _id: 1,
+              workshopId: 1,
+              "providerDetails._id": 1,
+              "providerDetails.workshopName":1,
+              "providerDetails.ownerName":1,
+              "providerDetails.email":1,
+              "providerDetails.mobile":1,
+              "providerDetails.workshopDetails":1,
+              "providerDetails.about":1,
+              "providerDetails.logoUrl":1,
+              services: vehicleType === "twoWheeler" ? "$twoWheeler" : "$fourWheeler",
+
+            }
+        },
+        
+        {
+            $unwind: "$services"
+        },
+        {
+          $match: { "services.typeId": new mongoose.Types.ObjectId(serviceId) } 
+        }
+        
+        
+    ])
+    //console.log("This is the finded serviceData: ", findedService)
+    //console.log("This is the providerServcieData", providerDetails[0])
+    //console.log("This is the providerServiceDataNextedStructure: ", JSON.stringify(providerDetails, null, 2));
+
+      if(!providerDetails){
+        return {success:false, message:"Can't find service of providers"}
+      }
+
+      return { success: true, providerData: providerDetails[0], serviceData:findedService };
+
+  } catch (error) {
+      console.log("Error in providerServiceViewRepo: ", error);
+      return { success: false, message: "Something went wrong in providerServiceViewRepo" };
+  }
+}
+
 
 
 }

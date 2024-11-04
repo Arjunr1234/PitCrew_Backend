@@ -10,7 +10,7 @@ class ProviderAddServiceInteractor implements IProviderAddServiceInteractor {
     ) {}
 
   
-  
+   
   async getAllProviderService(
     id: string, 
     vehicleType: number

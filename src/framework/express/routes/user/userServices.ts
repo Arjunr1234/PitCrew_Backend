@@ -16,7 +16,8 @@ const controller = new UserServiceController(interactor);
 userServiceRoute.get('/get-all-services',verification('user'), controller.getAllServices.bind(controller));
 userServiceRoute.get('/get-all-brands',  controller.getAllBrands.bind(controller));
 
-userServiceRoute.post('/search-providers', verification('user'), controller.findProviders.bind(controller))
+userServiceRoute.post('/search-providers', verification('user'), controller.findProviders.bind(controller));
+userServiceRoute.post('/provider-serivce-view', controller.providerServiceView.bind(controller))
 
 
 
