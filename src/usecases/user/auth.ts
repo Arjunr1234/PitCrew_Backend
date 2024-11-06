@@ -56,7 +56,7 @@ class UserAuthInteractor implements IUserAuthInteractor {
     }
     console.log("This is the response of signup: ", signup)
     const payload = {
-                     id:signup.user.id,
+                     roleId:signup.user.id,
                      email:signup.user.email,
                      role:'user'
                    }
@@ -93,13 +93,14 @@ class UserAuthInteractor implements IUserAuthInteractor {
             return response
         }
     }
-    console.log("This is the response of login: ", response)
+    
     const payload = {
-      id:response.user?.id,
+      roleId:response.user?.id,
       email:response.user?.email,
       role:'user'
     }
-    const acessToken = this.jwtServices.generateToken(payload, { expiresIn: '1h' })
+    console.log("This is the payload of login: ", payload);
+    const acessToken = this.jwtServices.generateToken(payload, { expiresIn: '1h' });
     const refreshToken = this.jwtServices.generateRefreshToken(payload, { expiresIn: '1d' })
 
     return { user: response.user, success: response.success, message: response.message, accesToken: acessToken, refreshToken: refreshToken }

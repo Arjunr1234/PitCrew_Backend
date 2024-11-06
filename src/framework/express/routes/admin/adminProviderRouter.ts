@@ -18,7 +18,7 @@ const controller = new AdminProviderController(interactor);
 adminProviderRoute.get('/get-pending-providers',verification('admin'),controller.getPendingProviders.bind(controller));
 adminProviderRoute.get('/get-providers',verification('admin'), controller.getProviders.bind(controller))
 adminProviderRoute.patch('/provider-accept-reject',verification('admin'), controller.providerAcceptOrReject.bind(controller));
-adminProviderRoute.patch('/provider-block-unblock',verification('admin'), controller.providerBlockAndUnblock.bind(controller))
+adminProviderRoute.patch('/provider-block-unblock', controller.providerBlockAndUnblock.bind(controller));
 
 
 

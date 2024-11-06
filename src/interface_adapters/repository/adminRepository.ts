@@ -203,17 +203,7 @@ class AdminRepository implements IAdminRepository{
         }
   }
 
-  // async providerAcceptRePo(id: string, state: boolean): Promise<{ success: boolean; message?: string; }> {
-  //      try {
-  //          // const acceptProvider = await providerModel.
-  //          return {success:true}
-        
-  //      } catch (error) {
-  //          console.log("Error in providerAccetpRep: ",error);
-  //          return {success:false, message:"Something went wrong in ProviderAcceptRepo"}
-        
-  //      }
-  // }
+ 
   
 
     async providerBlockAndUnblockUseCase(id: string, state: boolean): Promise<{ success: boolean; message?: string; }> {
@@ -237,6 +227,12 @@ class AdminRepository implements IAdminRepository{
            
            try {
                const {category, serviceType} = data
+
+
+               const findService = await serviceModel.findOne({ serviceType: new RegExp(`^${serviceType}$`, 'i') });
+               if(findService){
+                   return {success:false, message:"Service already exists!!"}
+               }
                const createService = await serviceModel.create({
                 imageUrl:image,
                 category:category,
@@ -266,8 +262,8 @@ class AdminRepository implements IAdminRepository{
 
     async addBrandRepo(brand: string): Promise<{ success: boolean; message?: string; brand?:IBrands}> {
       try {
-      
-          const findBrand = await brandModel.findOne({ brand });
+
+          const findBrand = await brandModel.findOne({ brand: new RegExp(`^${brand}$`, 'i') });
           if (findBrand) {
               return { success: false, message: "Brand already exists!!" };
           }
@@ -293,6 +289,7 @@ class AdminRepository implements IAdminRepository{
 
   async addVehicleTypeRepo(type: number): Promise<{ success: boolean; message?: string; }> {
     try {
+
       const findType = await vehicleTypeModel.findOne({ vehicleType: type });
 
       if (findType) {

@@ -18,6 +18,11 @@ class AdminServiceController {
             }
             const response = await this.AdminServiceInteractor.addServiceUseCase(file,data); 
 
+            if(!response.success){
+              res.status(400).json({success:response.success, message:response.message})
+              return
+            }
+
             
             res.status(200).json({ success: true, service:response.service });
         } catch (error) {
@@ -28,7 +33,7 @@ class AdminServiceController {
   async addBrands(req: Request, res: Response, next: NextFunction) {
     try {
       const { brand } = req.body;
-
+      
       const response = await this.AdminServiceInteractor.addBrandUseCase(brand);
 
       if (!response.success) {

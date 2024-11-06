@@ -14,7 +14,7 @@ class ProviderAddServiceController {
   async getAllBrands(req: Request, res: Response, next: NextFunction) {
     try {
         console.log("Entered into getAllBrands");
-        console.log("This is req Object://///////////fuck:  ", req)
+       
 
         const providerId = req.query.id
 
@@ -25,7 +25,7 @@ class ProviderAddServiceController {
         
         const response = await this.providerAddServiceInteractor.getAllBrandsUseCase(providerId as string)
          
-        console.log("This is the response: ", response);
+        
 
         if(!response.success){
            res.status(HttpStatus.BAD_REQUEST).json({success:false, message:response.message})

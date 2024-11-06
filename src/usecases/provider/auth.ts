@@ -98,11 +98,11 @@ class ProviderAuthInteractor implements IProviderAuthInteractor {
                
 
                 const payload = {
-                   _id:loginResponse.provider?._id,
+                   roleId:loginResponse.provider?._id,
                    email:loginResponse.provider?.email,
                    role:'provider'
-
                 }
+                console.log("This is the payload: ", payload)
                 const accessToken = this.jwt.generateToken(payload, {expiresIn:'1h'})
                 const refreshToken = this.jwt.generateRefreshToken(payload, {expiresIn:'14d'})
  
