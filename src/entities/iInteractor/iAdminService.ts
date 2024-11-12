@@ -11,6 +11,7 @@ interface IAdminServiceInteractor{
   getAllRoadServiceUseCase():Promise<{success:boolean, message?:string, services?:IServices[] | []}>
   deleteServiceUseCase(id:string):Promise<{success:boolean, message?:string}>
   addSubServiceUseCase(data:ISubserviceData):Promise<{success:boolean, message?:string,subService?:ISubServiceData}>
+  removeSubServiceUseCase(serviceId:string, subServiceId:string):Promise<{success:boolean, message?:string}>
 
 }
 

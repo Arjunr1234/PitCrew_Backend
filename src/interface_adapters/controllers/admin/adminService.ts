@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import IAdminServiceInteractor, { ISubserviceData } from "../../../entities/iInteractor/iAdminService";
+import HttpStatus from "../../../entities/rules/statusCodes";
 
 class AdminServiceController {
     constructor(
@@ -115,6 +116,8 @@ class AdminServiceController {
     }
   }
 
+ 
+
   async getAllGeneralService(req: Request, res: Response, next: NextFunction) {
     try {
         console.log("Entered in to getAllGeneralService");
@@ -206,6 +209,30 @@ async addSubServices(req: Request, res: Response, next: NextFunction) {
   }
 }
 
+async removeSubService(req:Request, res:Response, next:NextFunction){
+  try {
+        const serviceId  = req.query.serviceId as string
+        const subServiceId = req.query.subServiceId as string
+
+        if(!serviceId || !subServiceId){
+            res.status(HttpStatus.BAD_REQUEST).json({success:false, message:"Please provide necessary input"});
+            return
+        }
+
+        const response = await this.AdminServiceInteractor.removeSubServiceUseCase(serviceId, subServiceId);
+
+        if(!response.success){
+           res.status(HttpStatus.BAD_REQUEST).json({success:false, message:response.message})
+        }
+        
+        res.status(HttpStatus.OK).json({success:response.success, message:response.message})
+
+    
+  } catch (error) {
+       console.log("Error in removeSubService: ", error)
+       next(error)
+  }
+}
 
 
  

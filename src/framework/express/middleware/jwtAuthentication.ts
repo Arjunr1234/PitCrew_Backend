@@ -67,7 +67,7 @@ const verification = (type: "user" | "provider" | "admin"): RequestHandler => {
             const isBlocked = type === "user"
               ? await isUserBlocked(decodedToken.roleId)
               : await isProviderBlocked(decodedToken.roleId);
-              console.log("This is i issssssBlocked:    ",isBlocked)
+              
             if (isBlocked) {
               res.status(403).json({ message: `${type.charAt(0).toUpperCase() + type.slice(1)} is blocked.`, role: type });
               return;

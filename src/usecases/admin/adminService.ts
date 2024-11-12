@@ -181,6 +181,19 @@ async addSubServiceUseCase(data: ISubserviceData): Promise<{ success: boolean; m
   }
 }
 
+async removeSubServiceUseCase(serviceId: string, subServiceId: string): Promise<{ success: boolean; message?: string; }> {
+    try {
+      const response = this.AdminServiceRepository.removeSubServiceRepo(serviceId, subServiceId);
+
+     return response
+      
+    } catch (error) {
+        console.log("Error in removeSubServiceUseCase: ", error);
+        return {success:false, message:"Something went wrong in removeSubServiceUseCase"}
+      
+    }
+}
+
 
 
 

@@ -28,6 +28,7 @@ adminServiceRoute.get('/get-all-road-service', verification('admin'), controller
 
 adminServiceRoute.delete('/remove-service', verification('admin'), controller.deleteService.bind(controller));
 adminServiceRoute.delete('/delete-brands', verification('admin'), controller.deleteBrand.bind(controller));
+adminServiceRoute.delete('/remove-sub-service', controller.removeSubService.bind(controller))
 
 
 

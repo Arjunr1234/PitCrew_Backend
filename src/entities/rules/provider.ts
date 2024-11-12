@@ -250,4 +250,39 @@ export interface IFullDetails {
   location: Location;
 }
 
+// Add slot Data -repo
+
+export interface IAddSlotData{
+  providerId:string, 
+  startingDate :Date,
+  endingDate :Date;
+  count:number
+}
+export interface ISlotData{
+_id:string,
+date:Date,
+count:number
+}
+
+// Add slotData - useCase
+
+export interface IAddSlotData{
+  providerId:string,
+  startingDate:Date,
+  endingDate:Date,
+  count:number
+}
+export interface ISlotDataUseCase{
+  _id:string,
+  date:Date,
+  count:number
+  }
+
+  // get all slot data
+
+ export interface IGetSlotData{
+    _id:string,
+    date:Date,
+    count:number
+  }
 

@@ -1,4 +1,4 @@
-import { IAddBrandData, IAddingData, IAdminBrand, IEditSubType, ILogData, IProviderBrand, IProviderData,IProviderRegisterData,IProviderResponseData, IRemoveBrandData, IRemoveService, IRemoveSubTypeData, ISubTypeData, ProviderModel } from "../rules/provider";
+import { IAddBrandData, IAddingData, IAddSlotData, IAdminBrand, IEditSubType, IGetSlotData, ILogData, IProviderBrand, IProviderData,IProviderRegisterData,IProviderResponseData, IRemoveBrandData, IRemoveService, IRemoveSubTypeData, ISlotData, ISubTypeData, ProviderModel } from "../rules/provider";
 import { Types } from "mongoose";
 
 interface IproviderRepository{
@@ -16,8 +16,11 @@ interface IproviderRepository{
       removeSubTypeRepo(data:IRemoveSubTypeData):Promise<{success:boolean, message?:string}>
       editSubTypeRepo(data:IEditSubType):Promise<{success:boolean, meessage?:string}>
       removeServiceRepo(data:IRemoveService):Promise<{success:boolean, message?:string}>
+      addSlotRepo(data:IAddSlotData):Promise<{success:boolean, message?:string, slotData?:ISlotData[]}>
+      getAllSlotRepo(providerId:string):Promise<{success:boolean, message?:string, slotData?:IGetSlotData[]}>
 
 }
+
 
 
 

@@ -1,13 +1,15 @@
 import IproviderRepository, { IAllServices, IBrandData, IProviderServices, IServices } from "../../entities/irepository/iproviderRepo";
 import providerModel from "../../framework/mongoose/model/providerSchema";
 import OtpModel from "../../framework/mongoose/model/otpSchema";
-import { IAddBrandData, IAddingData, IAdminBrand, IEditSubType, ILogData, IProviderBrand, IProviderData,IProviderRegisterData,IProviderResponseData, IRemoveBrandData, IRemoveService, IRemoveSubTypeData, ISubTypeData } from "../../entities/rules/provider";
+import { IAddBrandData, IAddingData, IAddSlotData, IAdminBrand, IEditSubType, IGetSlotData, ILogData, IProviderBrand, IProviderData,IProviderRegisterData,IProviderResponseData, IRemoveBrandData, IRemoveService, IRemoveSubTypeData, ISlotData, ISubTypeData } from "../../entities/rules/provider";
 import bcrypt from 'bcrypt'
 import serviceModel from "../../framework/mongoose/model/serviceSchema";
 import brandModel from "../../framework/mongoose/model/brandSchema";
 import providerServiceModel from "../../framework/mongoose/model/providerServiceSchema";
 import vehicleTypeModel from "../../framework/mongoose/model/vehicleTypeSchema";
 import { response } from "express";
+import BookingSlot from "../../framework/mongoose/model/BookingSlotSchema";
+import mongoose from "mongoose";
 
 class ProviderRepository implements IproviderRepository {
 
@@ -559,6 +561,108 @@ async getAllBrandsRepo(providerId: string): Promise<{
       return { success: false, message: 'Something went wrong in removeServiceRepo' };
     }
   }
+
+  
+  
+  async addSlotRepo(data: IAddSlotData): Promise<{ success: boolean; message?: string; slotData?: ISlotData[] }> {
+    try {
+      const { providerId, startingDate, endingDate, count } = data;
+  
+      const start = new Date(startingDate);
+      const end = new Date(endingDate);
+  
+      
+      const providerIdObjectId = new mongoose.Types.ObjectId(providerId);
+  
+     
+      const existingSlots = await BookingSlot.find({
+        providerId: providerIdObjectId,
+        date: { $gte: start, $lte: end }, 
+      });
+  
+      if (existingSlots.length > 0) {
+        return { success: false, message: "Slot for the given date already exists." };
+      }
+  
+     
+      if (start.toDateString() === end.toDateString()) {
+        const slot = await BookingSlot.create({
+          providerId: providerIdObjectId,
+          date: start,
+          count: count,
+        });
+        console.log("This is the single response: ", slot);
+  
+        const data = {
+          _id: slot._id + "",
+          date: slot.date,
+          count: slot.count,
+        };
+        return { success: true, slotData: [data] };
+      } else {
+       
+        const slotsToInsert = [];
+        const currentDate = new Date(start);
+  
+        
+        while (currentDate <= end) {
+          slotsToInsert.push({
+            providerId: providerIdObjectId,
+            date: new Date(currentDate), 
+            count: count,
+          });
+  
+          
+          currentDate.setDate(currentDate.getDate() + 1);
+        }
+  
+        const insertedSlots = await BookingSlot.insertMany(slotsToInsert);
+        const data = insertedSlots.map((slot) => ({
+          _id: slot._id + "",
+          date: slot.date,
+          count: slot.count,
+        }));
+  
+        return { success: true, slotData: data };
+      }
+    } catch (error: any) {
+      console.log("Error in addSlotRepo: ", error);
+  
+      if (error.code === 11000) {
+        return { success: false, message: "Slot for the given date already exists." };
+      }
+  
+      return { success: false, message: "Something went wrong in addSlotRepo" };
+    }
+  }
+
+
+  async getAllSlotRepo(providerId: string): Promise<{ success: boolean; message?: string; slotData?: IGetSlotData[]; }> {
+      try {
+
+        const findAllSlot = await BookingSlot.find({}).sort({date:1})
+
+        const data = findAllSlot.map((slot) => ({
+          _id:slot._id+"",
+          date:slot.date,
+          count:slot.count
+        }))
+        console.log("This is the data: ", data)
+
+
+        if(!findAllSlot){
+          return {success:false, message:"Failed to findSlotData"}
+        }
+
+        return {success:true, slotData:data}
+        
+      } catch (error) {
+          console.log("Error in getAllSlotRepo: ", error)
+          return{success:false, message:"Something went wrong in getAllSlotRepo"}
+      }
+  }
+  
+  
   
   
 

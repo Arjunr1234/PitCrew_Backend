@@ -10,6 +10,7 @@ import serviceModel from "../../framework/mongoose/model/serviceSchema";
 import brandModel from "../../framework/mongoose/model/brandSchema";
 import vehicleTypeModel from "../../framework/mongoose/model/vehicleTypeSchema";
 import providerServiceModel from "../../framework/mongoose/model/providerServiceSchema";
+import mongoose from "mongoose";
 
 
 class AdminRepository implements IAdminRepository{
@@ -468,6 +469,28 @@ async deleteServiceRepo(id: string): Promise<{ success: boolean; message?: strin
       return { success: false, message: "An error occurred while adding the sub-service." };
     }
   }
+
+ async removeSubServiceRepo(serviceId: string, subServiceId: string): Promise<{ success: boolean; message?: string; }> {
+     try {
+
+        const removeSubService = await serviceModel.updateOne(
+            {_id:serviceId},
+            {$pull : {subTypes:{_id:new mongoose.Types.ObjectId(subServiceId)}}}
+        );
+
+        if (removeSubService.modifiedCount === 0) {
+          return { success: false, message: "Sub-Service not found or already removed." };
+        }
+
+        return { success: true, message: "Sub-Service removed successfully." };
+        
+      
+     } catch (error) {
+         console.log("Error in removeSubService: ", error);
+         return {success:false, message:"something went wrong in removeSubServiceRepo"}
+      
+     }
+ }
 
 
 
