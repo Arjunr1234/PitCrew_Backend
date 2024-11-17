@@ -36,6 +36,29 @@ class ProviderBookingsInteractor implements IProviderBookingsInteractor{
       }
   }
 
+  async updateSlotCountUseCase(slotId: string, state: number): Promise<{ success: boolean; message?: string; }> {
+      try {
+          const response = await this.BookingsRepository.updateSlotCountRepo(slotId, state);
+          return response
+        
+      } catch (error) {
+        console.log("Error in updateSlotCountUseCase: ",error)
+        return {success:false, message:"Something went wrong in updateSlotCountUseCase"}
+      }
+  }
+
+  async removeSlotUseCase(slotId: string): Promise<{ success: boolean; message?: string; }> {
+      try {
+        
+          const response = await this.BookingsRepository.removeSlotRepo(slotId);
+          return response
+      } catch (error) {
+          console.log("Error in removeSlotUseCase: ", error);
+          return{success:false, message:"Something went wrong in removeSlotUsecase"}
+        
+      }
+  }
+
 
 
 

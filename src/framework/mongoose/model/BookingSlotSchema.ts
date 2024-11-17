@@ -25,6 +25,8 @@ const BookingSlotSchema = new Schema<IBookingSlot>(
   }
 );
 
+BookingSlotSchema.index({ providerId: 1, date: 1 }, { unique: true });
+
 const BookingSlot = mongoose.model<IBookingSlot>("bookingSlot", BookingSlotSchema);
 
 export default BookingSlot;

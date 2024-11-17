@@ -20,7 +20,13 @@ const controller = new ProviderBookingsController(interactor);
 
 providerBookingsRoute.post('/add-slot', controller.addSlot.bind(controller));
 
+
 providerBookingsRoute.get('/get-all-slot', controller.getAllSlot.bind(controller));
+
+
+providerBookingsRoute.patch('/update-slot', controller.updateSlotCount.bind(controller))
+
+providerBookingsRoute.delete('/remove-slot', controller.removeSlot.bind(controller))
 
 
 export default providerBookingsRoute

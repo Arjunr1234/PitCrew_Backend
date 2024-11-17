@@ -15,6 +15,9 @@ interface iUserRepository{
   getAllBrandRepo():Promise<{success:boolean, message?:string, brandData?:IBrandData[]}>
   findProvidersRepo(data:IDetails):Promise<{success:boolean, message?:string, providersData?:IProvidersData[] | [] }>
   providerServiceViewRepo(providerId:string, vehicleType:string, serviceId:string):Promise<{success:boolean, message?:string, providerData?:any, serviceData?:any}>
+  checkAvaliableSlotRepo(providerId:string, date:string):Promise<{success:boolean, message?:string, slotId?:string}>
+  serviceBookingRepo(data:any):Promise<{success:boolean, message?:string, bookingDetails?:any}>
+  updateBooking(sessionId:string, bookingId:string):Promise<{success:boolean, message?:string}>
 }
 
 

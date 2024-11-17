@@ -61,7 +61,7 @@ const verification = (type: "user" | "provider" | "admin"): RequestHandler => {
             req.body.roleId = decodedToken.roleId;
             req.body.role = decodedToken.role;
 
-            // Log roleId
+            
             console.log("Role ID from middleware (refresh token flow):", decodedToken.roleId);
 
             const isBlocked = type === "user"

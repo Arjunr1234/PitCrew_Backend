@@ -17,10 +17,10 @@ class ProviderBookingsController {
 
       const { providerId, startingDate, endingDate, count } = req.body
 
-      if (!providerId || !startingDate || !endingDate || !count) {
+      if (!providerId || !startingDate || !count) {
         res.status(HttpStatus.BAD_REQUEST).json({ success: false, message: "Please provide necessary data" })
       }
-
+     
       const data = { providerId, startingDate, endingDate, count }
 
       console.log("This is data: ", data);
@@ -64,7 +64,60 @@ class ProviderBookingsController {
 
     }
   }
+
+
+  async updateSlotCount(req:Request, res:Response, next:NextFunction){
+     try {
+        const {slotId, state} = req.body
+
+        if(!slotId || !state){
+           res.status(HttpStatus.BAD_REQUEST).json({success:false, message:"Please provide necessary details"})
+        }
+
+        const response = await this.providerBookingsInteractor.updateSlotCountUseCase(slotId, state);
+        
+        if(!response.success){
+          res.status(HttpStatus.BAD_REQUEST).json({success:false, message:response.message})
+        }
+
+         res.status(HttpStatus.OK).json({success:response.success, message:response.message})
+
+      
+     } catch (error) {
+         console.log("Error in updateSlotCountController: ",error)
+         next(error)
+     }
+  }
+
+  async removeSlot(req:Request, res:Response, next:NextFunction){
+         try {
+
+          const slotId = req.query.slotId as string
+
+          if(!slotId){
+            res.status(HttpStatus.BAD_REQUEST).json({success:false, message:"Please provide slotId"})
+          }
+
+            const response = await this.providerBookingsInteractor.removeSlotUseCase(slotId);
+
+            if(!response.success){
+               res.status(HttpStatus.BAD_REQUEST).json({success:response.success, message:response.message})
+            }
+
+               res.status(HttpStatus.OK).json({success:response.success, message:response.message})
+
+          
+         } catch (error) {
+             console.log("Error in removeSlot: ", error);
+             next(error)
+          
+         }
+  }
+
   
+
+  
+
 
 }
 

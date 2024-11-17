@@ -11,6 +11,7 @@ interface IUserServiceInteractor{
  findProvidersUseCase(data:IFullDetails):Promise<{success:boolean, message?:string, providersData?:IProvidersUseData[] | []}>
  providerServiceViewUseCase(providerId:string, vehicleType:string, serviceId:string):Promise<{success:boolean, message?:string, providerData?:any}>
  
+ 
 }
 
 

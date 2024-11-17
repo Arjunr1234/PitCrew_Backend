@@ -434,15 +434,18 @@ async deleteServiceRepo(id: string): Promise<{ success: boolean; message?: strin
         return { success: false, message: "Invalid data provided" };
       }
 
+      console.log("Thhhhhhhhhhhhhhhhhhhhhhhhis is the subservice: ", )
+      
       const checkExist = await serviceModel.findOne({
         _id: id,
-        'subTypes.type': subService, 
+        'subTypes.type': { $regex: new RegExp(`^${subService}$`, 'i') }, 
       });
-       console.log("This is check exixst: ", checkExist)
+      console.log("This is check exist: ", checkExist);
       
       if (checkExist) {
         return { success: false, message: "Service already exists" };
       }
+      
 
      const addSubService = await serviceModel.findByIdAndUpdate(
                        id,

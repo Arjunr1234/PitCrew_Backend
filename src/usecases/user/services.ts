@@ -120,7 +120,7 @@ class UserServiceInteractor implements IUserServiceInteractor{
              return {success:false, message:"Something went wrong in providerServiceViewUseCase"}
             
         }
-    }
+}
 
       
 

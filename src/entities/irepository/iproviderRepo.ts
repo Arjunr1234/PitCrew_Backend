@@ -18,6 +18,8 @@ interface IproviderRepository{
       removeServiceRepo(data:IRemoveService):Promise<{success:boolean, message?:string}>
       addSlotRepo(data:IAddSlotData):Promise<{success:boolean, message?:string, slotData?:ISlotData[]}>
       getAllSlotRepo(providerId:string):Promise<{success:boolean, message?:string, slotData?:IGetSlotData[]}>
+      updateSlotCountRepo(slotId:string, state:number):Promise<{success:boolean, message?:string}>
+      removeSlotRepo(slotId:string):Promise<{success:boolean, message?:string}>
 
 }
 

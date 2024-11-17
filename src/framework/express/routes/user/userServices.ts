@@ -17,7 +17,7 @@ userServiceRoute.get('/get-all-services',verification('user'), controller.getAll
 userServiceRoute.get('/get-all-brands', verification('user'), controller.getAllBrands.bind(controller));
 
 userServiceRoute.post('/search-providers', verification('user'), controller.findProviders.bind(controller));
-userServiceRoute.post('/provider-serivce-view', controller.providerServiceView.bind(controller))
+userServiceRoute.post('/provider-serivce-view', controller.providerServiceView.bind(controller));
 
 
 

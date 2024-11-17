@@ -10,6 +10,7 @@ import vehicleTypeModel from "../../framework/mongoose/model/vehicleTypeSchema";
 import { response } from "express";
 import BookingSlot from "../../framework/mongoose/model/BookingSlotSchema";
 import mongoose from "mongoose";
+import { error } from "console";
 
 class ProviderRepository implements IproviderRepository {
 
@@ -564,67 +565,54 @@ async getAllBrandsRepo(providerId: string): Promise<{
 
   
   
+  
+  
   async addSlotRepo(data: IAddSlotData): Promise<{ success: boolean; message?: string; slotData?: ISlotData[] }> {
     try {
       const { providerId, startingDate, endingDate, count } = data;
-  
       const start = new Date(startingDate);
-      const end = new Date(endingDate);
+      const end = endingDate ? new Date(endingDate) : null;
   
-      
-      const providerIdObjectId = new mongoose.Types.ObjectId(providerId);
+      const createdSlots: ISlotData[] = [];
   
-     
-      const existingSlots = await BookingSlot.find({
-        providerId: providerIdObjectId,
-        date: { $gte: start, $lte: end }, 
-      });
+      const addDays = (date: Date, days: number): Date => {
+        const newDate = new Date(date);
+        newDate.setDate(newDate.getDate() + days);
+        return newDate;
+      };
   
-      if (existingSlots.length > 0) {
-        return { success: false, message: "Slot for the given date already exists." };
-      }
-  
-     
-      if (start.toDateString() === end.toDateString()) {
-        const slot = await BookingSlot.create({
-          providerId: providerIdObjectId,
-          date: start,
-          count: count,
+      let currentDate = new Date(start);
+      while (end ? currentDate <= end : currentDate <= start) {
+        const existingSlot = await BookingSlot.findOne({
+          providerId: new mongoose.Types.ObjectId(providerId),
+          date: currentDate,
         });
-        console.log("This is the single response: ", slot);
   
-        const data = {
-          _id: slot._id + "",
-          date: slot.date,
-          count: slot.count,
-        };
-        return { success: true, slotData: [data] };
-      } else {
-       
-        const slotsToInsert = [];
-        const currentDate = new Date(start);
-  
-        
-        while (currentDate <= end) {
-          slotsToInsert.push({
-            providerId: providerIdObjectId,
-            date: new Date(currentDate), 
-            count: count,
+        if (!existingSlot) {
+          const createdSlot = await BookingSlot.create({
+            providerId: new mongoose.Types.ObjectId(providerId),
+            date: currentDate,
+            count,
+            reservedCount: 0,
+            bookedCount: 0,
           });
-  
+          const updatedSlot = {
+             _id:createdSlot._id + "",
+             date:createdSlot.date,
+             count:createdSlot.count
+          }
           
-          currentDate.setDate(currentDate.getDate() + 1);
+          createdSlots.push(updatedSlot);
         }
   
-        const insertedSlots = await BookingSlot.insertMany(slotsToInsert);
-        const data = insertedSlots.map((slot) => ({
-          _id: slot._id + "",
-          date: slot.date,
-          count: slot.count,
-        }));
-  
-        return { success: true, slotData: data };
+        currentDate = addDays(currentDate, 1);
+        if (!end) break;
       }
+  
+      return {
+        success: true,
+        slotData: createdSlots,
+      };
     } catch (error: any) {
       console.log("Error in addSlotRepo: ", error);
   
@@ -635,6 +623,8 @@ async getAllBrandsRepo(providerId: string): Promise<{
       return { success: false, message: "Something went wrong in addSlotRepo" };
     }
   }
+  
+  
 
 
   async getAllSlotRepo(providerId: string): Promise<{ success: boolean; message?: string; slotData?: IGetSlotData[]; }> {
@@ -662,6 +652,63 @@ async getAllBrandsRepo(providerId: string): Promise<{
       }
   }
   
+
+  async updateSlotCountRepo(slotId: string, state: number): Promise<{ success: boolean; message?: string; }> {
+    try {
+      
+      if (!mongoose.Types.ObjectId.isValid(slotId)) {
+        return { success: false, message: "Invalid slotId" };
+      }
+  
+      
+      if (typeof state !== "number") {
+        return { success: false, message: "Invalid state value" };
+      }
+  
+      const updateSlot = await BookingSlot.findByIdAndUpdate(
+        slotId,
+        { $inc: { count: state } },
+        { new: true }
+      );
+  
+      if (!updateSlot) {
+        return { success: false, message: "Failed to update Slot" };
+      }
+  
+      return { success: true, message: "Updated successfully!!" };
+    } catch (error) {
+      console.error("Error in updateSlotCountRepo: ", error);
+      return {
+        success: false,
+        message: "Something went wrong in updateSlotCountRepo",
+      };
+    }
+  }
+
+  async removeSlotRepo(slotId: string): Promise<{ success: boolean; message?: string; }> {
+    try {
+     
+      if (!mongoose.Types.ObjectId.isValid(slotId)) {
+        return { success: false, message: "Invalid slotId" };
+      }
+  
+      
+      const deletedSlot = await BookingSlot.findByIdAndDelete(slotId);
+  
+     
+      if (!deletedSlot) {
+        return { success: false, message: "Slot not found" };
+      }
+  
+      return { success: true, message: "Slot removed successfully" };
+    } catch (error) {
+      console.error("Error in removeSlotRepo: ", error);
+      return {
+        success: false,
+        message: "Something went wrong in removeSlotRepo",
+      };
+    }
+  }
   
   
   

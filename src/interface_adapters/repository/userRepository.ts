@@ -8,6 +8,8 @@ import brandModel from "../../framework/mongoose/model/brandSchema";
 import providerModel from "../../framework/mongoose/model/providerSchema";
 import mongoose, { ObjectId } from "mongoose";
 import providerServiceModel from "../../framework/mongoose/model/providerServiceSchema";
+import BookingSlot from "../../framework/mongoose/model/BookingSlotSchema";
+import BookingModel from "../../framework/mongoose/model/BookingSchema";
 
 class UserRepository implements iUserRepository {
 
@@ -284,9 +286,7 @@ async providerServiceViewRepo(providerId: string, vehicleType: string, serviceId
         
         
     ])
-    //console.log("This is the finded serviceData: ", findedService)
-    //console.log("This is the providerServcieData", providerDetails[0])
-    //console.log("This is the providerServiceDataNextedStructure: ", JSON.stringify(providerDetails, null, 2));
+    
 
       if(!providerDetails){
         return {success:false, message:"Can't find service of providers"}
@@ -299,6 +299,124 @@ async providerServiceViewRepo(providerId: string, vehicleType: string, serviceId
       return { success: false, message: "Something went wrong in providerServiceViewRepo" };
   }
 }
+
+async checkAvaliableSlotRepo(providerId: string, date: string): Promise<{success:boolean, message?:string, slotId?:string}> {
+    try {
+        console.log("This is the date: " ,date )
+        const selectedDate = new Date(date);
+
+        console.log("This is selected date: ", selectedDate)
+        const nextDate = new Date(selectedDate)
+        nextDate.setDate(selectedDate.getDate() + 1)
+        console.log("This is next date: ", nextDate)
+
+        const slot = await BookingSlot.findOne({
+           providerId,
+           date:{$gt:selectedDate,$lte: nextDate},
+           count:{$gt:0}
+        })
+
+        if(!slot){
+           return {success:false, message:"No slot is avaliable"}
+        }
+        
+        return {success:true, message:`${slot.count} is avaliable`, slotId:slot._id+""}
+      
+    } catch (error) {
+        console.log("Error in checkAvaliableSlot: ",error);
+        return {success:false, message:"Something went wrong in checkAvaliableSlot"}
+      
+    }
+}
+
+
+
+async  serviceBookingRepo(data: any): Promise<{success:boolean, message?:string, bookingDetails?:any}> {
+  try {
+    console.log("This is the serviceBookingData in Repo:", data);
+
+    
+    const bookingData = {
+      serviceType: 'general', 
+      userId: new mongoose.Types.ObjectId(data.userId),
+      providerId: new mongoose.Types.ObjectId(data.providerId),
+      slotId: new mongoose.Types.ObjectId(data.slotId),
+      serviceId: new mongoose.Types.ObjectId(data.vehicleDetails.serviceId), 
+
+      vehicleDetails: {
+        number: data.vehicleDetails.vehicleNumber,
+        model: data.vehicleDetails.vehicleModel,
+        brand: data.vehicleDetails.vehicleBrand.brandName,
+        kilometersRun: data.vehicleDetails.kilometers,
+        fuelType: data.vehicleDetails.fuelType.toLowerCase() === 'petrol' ? 'petrol' : 'diesel',
+        vehicleType: data.vehicleDetails.vehicleType === 'twoWheeler' ? 'twoWheeler' : 'fourWheeler',
+      },
+
+      location: {
+        address: data.vehicleDetails.location.place_name,
+        coordinates: data.vehicleDetails.location.coordinates,
+      },
+
+      userPhone: data.userPhone,
+      bookingDate: new Date(), 
+      amount: data.totalPrice,
+      platformFee:data.platformFee,
+      subTotal:(data.totalPrice + data.platformFee),
+      paymentId: '', 
+      reason: '',
+      status: 'pending', 
+
+      
+      selectedSubServices: data.selectedServices.map((service: any) => ({
+        type: service.type,
+        startingPrice: service.startingPrice,
+        _id: new mongoose.Types.ObjectId(service._id),
+        isAdded: service.isAdded,
+      })),
+
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+
+    
+    const serviceBooking = await BookingModel.create(bookingData);
+
+    if (!serviceBooking) {
+      return { success: false, message: "Failed to book service in repo" };
+    }
+
+    return { success: true, bookingDetails: serviceBooking };
+  } catch (error) {
+    console.error("Error in serviceBookingRepo:", error);
+    return { success: false, message: "Something went wrong in serviceBookingRepo" };
+  }
+}
+
+
+async updateBooking(paymentIntent: string, bookingId: string): Promise<{ success: boolean; message?: string; }> {
+      try {
+            const updateBooking = await BookingModel.findByIdAndUpdate(
+              bookingId,
+              {
+                paymentId:paymentIntent,
+                paymentStatus:"success"
+              },
+              {new:true}
+            )
+
+            if(!updateBooking){
+              return{success:false, message:"Failed to updateBooking"}
+            }
+
+            return {success:true, message:"updated"}
+        
+      } catch (error) {
+          console.log("Error in updateBooking: ",error);
+          return {success:false, message:"something went wrong in updateBooking"}
+        
+      }
+}
+
 
 
 

@@ -255,7 +255,7 @@ export interface IFullDetails {
 export interface IAddSlotData{
   providerId:string, 
   startingDate :Date,
-  endingDate :Date;
+  endingDate :Date | null;
   count:number
 }
 export interface ISlotData{
@@ -269,7 +269,7 @@ count:number
 export interface IAddSlotData{
   providerId:string,
   startingDate:Date,
-  endingDate:Date,
+  endingDate:Date  | null,
   count:number
 }
 export interface ISlotDataUseCase{
@@ -286,3 +286,77 @@ export interface ISlotDataUseCase{
     count:number
   }
 
+
+  // bookingservicePaymentUsecase:
+
+//  export interface IBookingData {
+//     vehicleDetails: VehicleDetails;
+//     providerId: string;
+//     userId: string;
+//     userPhone: string;
+//     slotId: string;
+//     totalPrice: number;
+//   }
+  
+//   interface VehicleDetails {
+//     serviceId: string;
+//     serviceName: string;
+//     vehicleNumber: string;
+//     vehicleBrand: VehicleBrand;
+//     vehicleModel: string;
+//     kilometers: number;
+//     vehicleType: "twoWheeler" | "fourWheeler";
+//     fuelType: "Petrol" | "Diesel" 
+//     location: Location;
+//   }
+  
+//   interface VehicleBrand {
+//     brandName: string;
+//     id: string;
+//   }
+  
+//   interface Location {
+//     place_name: string;
+//     coordinates: [number, number];
+//   }
+interface Location {
+  place_name: string;
+  coordinates: [number, number]; // Latitude and Longitude
+}
+
+interface VehicleBrand {
+  brandName: string;
+  id: string;
+}
+
+interface VehicleDetails {
+  serviceId: string;
+  serviceName: string;
+  vehicleNumber: string;
+  vehicleBrand: VehicleBrand;
+  vehicleModel: string;
+  kilometers: number;
+  vehicleType: 'twoWheeler' | 'fourWheeler';
+  fuelType: 'Petrol' | 'Diesel' | 'Electric' | 'CNG';
+  location: Location;
+}
+
+interface SelectedService {
+  type: string;
+  startingPrice: string;
+  _id: string;
+  isAdded: boolean;
+}
+
+export interface IBookingData {
+  vehicleDetails: VehicleDetails;
+  providerId: string;
+  userId: string;
+  selectedServices: SelectedService[];
+  userPhone: string;
+  slotId: string;
+  totalPrice: number;
+  platformFee:number
+}
+
+  
