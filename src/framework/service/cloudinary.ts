@@ -24,6 +24,42 @@ class CloudinaryService implements ICloudinaryService {
       streamifier.createReadStream(fileBuffer).pipe(uploadStream);
     });
   }
+
+
+   extractPublicId (url:string):string {
+    const parts = url.split('/');
+    
+    const versionIndex = parts.findIndex((part:string) => part.startsWith('v'));
+    parts.splice(versionIndex, 1);
+  
+    
+    const publicIdWithExtension = parts.slice(parts.indexOf('userprofilePic')).join('/');
+    return publicIdWithExtension.split('.').slice(0, -1).join('.');
+  };
+
+  async deleteImage(imageUrl: string): Promise<{ success?: boolean; message?: string }> {
+    try {
+      const publicId = this.extractPublicId(imageUrl);
+  
+      if (!publicId) {
+        throw new Error('Invalid image URL. Cannot extract public_id.');
+      }
+  
+      const result = await cloudinary.uploader.destroy(publicId);
+  
+      if (result.result === 'ok') {
+        console.log('Image deleted successfully');
+        return { success: true, message: 'Image deleted successfully' };
+      } else {
+        console.warn('Image not found or already deleted:', result.result);
+        return { success: false, message: 'Image not found or already deleted' };
+      }
+    } catch (error: any) {
+      console.error('Delete Image Error:', error);
+      return { success: false, message: `Failed to delete image: ${error.message}` };
+    }
+  }
+  
 }
 
 export default CloudinaryService;

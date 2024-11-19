@@ -1,7 +1,7 @@
 import iUserRepository from "../../entities/irepository/iuserRepository";
 import userModel from "../../framework/mongoose/model/userSchema";
 import OtpModel from "../../framework/mongoose/model/otpSchema";
-import { IBrandData, IDetails, IProvidersData, IServiceData, user, userResponseData, userSignIn } from "../../entities/rules/user";
+import { IBrandData, IDetails, IProfileData, IProvidersData, IServiceData, IUserData, user, userResponseData, userSignIn } from "../../entities/rules/user";
 import bcrypt from 'bcrypt';
 import serviceModel from "../../framework/mongoose/model/serviceSchema";
 import brandModel from "../../framework/mongoose/model/brandSchema";
@@ -418,6 +418,84 @@ async updateBooking(paymentIntent: string, bookingId: string): Promise<{ success
 }
 
 
+async getUserDetailsRepo(userId: string): Promise<{ success: boolean; message?: string; userData?: IUserData; }> {
+    try {
+           
+           const userDetails = await userModel.findOne({_id:userId});
+
+           if(!userDetails){
+              return {success:false, message:"Failed to fetch userDetails"}
+           }
+
+           const userData = {
+              _id:userDetails._id+"",
+              name:userDetails.name,
+              phone:userDetails.phone,
+              email:userDetails.email,
+              imageUrl:userDetails.imageUrl?userDetails.imageUrl:""
+           }
+
+           return {success:true, userData:userData}
+      
+    } catch (error) {
+        console.log("Error in getUserDetails: ", error);
+        return {success:true, message:"Something went wrong in getUserDetails"}
+      
+    }
+}
+
+async editUserProfileRepo(data: IProfileData): Promise<{ success: boolean; message?: string; }> {
+    try {
+        const {userId, phone, name} = data
+
+        const updateUser = await userModel.findByIdAndUpdate(
+              userId,
+              {
+                $set:{
+                   name:name,
+                   phone:phone,
+                }
+              }
+        )
+        if(!updateUser){
+           return {success:false, message:"Failed to update profile data"}
+        }
+
+        return {success:true,}
+      
+    } catch (error) {
+        console.log("Error in editUserProfile: ", error)
+        return {success:false, message:"Something went wrong in editUserProfileRepo"}
+    }
+}
+
+async updateProfileImageRepo(userId: string, imageUrl: string): Promise<{ success: boolean; message?: string; prevImgUrl?: string | null; newImgUrl?: string; }> {
+    try {
+
+         const oldImage = await userModel.findById(userId).select('imageUrl');
+
+         const updateImage = await userModel.findByIdAndUpdate(
+                                  userId,
+                                  {
+                                    $set:{
+                                      imageUrl:imageUrl
+                                    }
+                                  },
+                                  {new:true}
+         );
+
+         if(!updateImage){
+           return {success:false, message:"Failed to update image"}
+         }
+
+          return{success:true, newImgUrl:updateImage.imageUrl, prevImgUrl:oldImage?.imageUrl}
+      
+    } catch (error) {
+        console.log("Error in updateProfileImageRepo: ", error);
+        return {success:false, message:"Something went wrong updateProfileImageRepo"}
+      
+    }
+}
 
 
 }

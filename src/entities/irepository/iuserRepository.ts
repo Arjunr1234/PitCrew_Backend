@@ -1,4 +1,4 @@
-import { IBrandData, IDetails, IProvidersData, IServiceData, user } from "../rules/user"
+import { IBrandData, IDetails, IProfileData, IProvidersData, IServiceData, IUserData, user } from "../rules/user"
 import { userResponseData } from "../rules/user"
 import { userSignIn } from "../rules/user"
 
@@ -18,6 +18,9 @@ interface iUserRepository{
   checkAvaliableSlotRepo(providerId:string, date:string):Promise<{success:boolean, message?:string, slotId?:string}>
   serviceBookingRepo(data:any):Promise<{success:boolean, message?:string, bookingDetails?:any}>
   updateBooking(sessionId:string, bookingId:string):Promise<{success:boolean, message?:string}>
+  getUserDetailsRepo(userId:string):Promise<{success:boolean, message?:string, userData?:IUserData}>
+  editUserProfileRepo(data:IProfileData):Promise<{success:boolean, message?:string}>
+  updateProfileImageRepo(userId:string, imageUrl:string):Promise<{success:boolean, message?:string, prevImgUrl?:string | null, newImgUrl?:string}>
 }
 
 

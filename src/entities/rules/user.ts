@@ -85,4 +85,22 @@ export interface IProvidersUseData{
 
 }
 
+// getuserDetails for repo and usecase
+
+export interface IUserData {
+  _id: string;
+  name: string;
+  phone: string;
+  email: string;
+  imageUrl: string;
+}
+
+
+// profileData Edit Repo and usecase
+
+export interface IProfileData{
+  userId:string,
+  phone:string,
+  name:string
+}
 
