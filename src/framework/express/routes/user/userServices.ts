@@ -3,6 +3,7 @@ import UserServiceController from '../../../../interface_adapters/controllers/us
 import UserServiceInteractor from '../../../../usecases/user/services';
 import UserRepository from '../../../../interface_adapters/repository/userRepository';
 import verification from '../../middleware/jwtAuthentication';
+import { role } from '../../../../entities/rules/constants';
 const userServiceRoute = express.Router();
 
 
@@ -13,11 +14,11 @@ const controller = new UserServiceController(interactor);
 
 //=================  Routes  ==================//
 
-userServiceRoute.get('/get-all-services',verification('user'), controller.getAllServices.bind(controller));
-userServiceRoute.get('/get-all-brands', verification('user'), controller.getAllBrands.bind(controller));
+userServiceRoute.get('/get-all-services',verification(role.user), controller.getAllServices.bind(controller));
+userServiceRoute.get('/get-all-brands', verification(role.user), controller.getAllBrands.bind(controller));
 
-userServiceRoute.post('/search-providers', verification('user'), controller.findProviders.bind(controller));
-userServiceRoute.post('/provider-serivce-view', controller.providerServiceView.bind(controller));
+userServiceRoute.post('/search-providers', verification(role.user), controller.findProviders.bind(controller));
+userServiceRoute.post('/provider-serivce-view',verification(role.user), controller.providerServiceView.bind(controller));
 
 
 

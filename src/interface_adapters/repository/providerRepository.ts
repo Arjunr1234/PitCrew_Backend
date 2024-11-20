@@ -599,7 +599,8 @@ async getAllBrandsRepo(providerId: string): Promise<{
           const updatedSlot = {
              _id:createdSlot._id + "",
              date:createdSlot.date,
-             count:createdSlot.count
+             count:createdSlot.count,
+             bookedCount:createdSlot.bookedCount
           }
           
           createdSlots.push(updatedSlot);
@@ -635,7 +636,8 @@ async getAllBrandsRepo(providerId: string): Promise<{
         const data = findAllSlot.map((slot) => ({
           _id:slot._id+"",
           date:slot.date,
-          count:slot.count
+          count:slot.count,
+          bookedCount:slot.bookedCount
         }))
         console.log("This is the data: ", data)
 

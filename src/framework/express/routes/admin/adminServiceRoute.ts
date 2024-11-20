@@ -5,6 +5,7 @@ import AdminServiceController from '../../../../interface_adapters/controllers/a
 import CloudinaryService from '../../../service/cloudinary';
 import { upload } from '../../../service/multer';
 import verification from '../../middleware/jwtAuthentication';
+import { role } from '../../../../entities/rules/constants';
 
 const adminServiceRoute = express.Router();
 
@@ -17,18 +18,18 @@ const controller = new AdminServiceController(interactor);
 
 // Routes
 
-adminServiceRoute.post('/add-service', verification('admin'), upload.single('image'), controller.addServices.bind(controller));
-adminServiceRoute.post('/add-brands', verification('admin'), controller.addBrands.bind(controller));
-adminServiceRoute.post('/add-vehicle-type', verification('admin'), controller.addVehicleTypes.bind(controller));
-adminServiceRoute.post('/add-subservice', verification('admin'), controller.addSubServices.bind(controller));
+adminServiceRoute.post('/add-service', verification(role.admin), upload.single('image'), controller.addServices.bind(controller));
+adminServiceRoute.post('/add-brands', verification(role.admin), controller.addBrands.bind(controller));
+adminServiceRoute.post('/add-vehicle-type', verification(role.admin), controller.addVehicleTypes.bind(controller));
+adminServiceRoute.post('/add-subservice', verification(role.admin), controller.addSubServices.bind(controller));
 
-adminServiceRoute.get('/get-all-brands', verification('admin'), controller.getAllBrands.bind(controller));
-adminServiceRoute.get('/get-all-general-service', verification('admin'), controller.getAllGeneralService.bind(controller));
-adminServiceRoute.get('/get-all-road-service', verification('admin'), controller.getAllRoadServices.bind(controller));
+adminServiceRoute.get('/get-all-brands', verification(role.admin), controller.getAllBrands.bind(controller));
+adminServiceRoute.get('/get-all-general-service', verification(role.admin), controller.getAllGeneralService.bind(controller));
+adminServiceRoute.get('/get-all-road-service', verification(role.admin), controller.getAllRoadServices.bind(controller));
 
-adminServiceRoute.delete('/remove-service', verification('admin'), controller.deleteService.bind(controller));
-adminServiceRoute.delete('/delete-brands', verification('admin'), controller.deleteBrand.bind(controller));
-adminServiceRoute.delete('/remove-sub-service', controller.removeSubService.bind(controller))
+adminServiceRoute.delete('/remove-service', verification(role.admin), controller.deleteService.bind(controller));
+adminServiceRoute.delete('/delete-brands', verification(role.admin), controller.deleteBrand.bind(controller));
+adminServiceRoute.delete('/remove-sub-service',verification(role.admin), controller.removeSubService.bind(controller))
 
 
 

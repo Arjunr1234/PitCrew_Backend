@@ -310,17 +310,21 @@ async checkAvaliableSlotRepo(providerId: string, date: string): Promise<{success
         nextDate.setDate(selectedDate.getDate() + 1)
         console.log("This is next date: ", nextDate)
 
-        const slot = await BookingSlot.findOne({
-           providerId,
-           date:{$gt:selectedDate,$lte: nextDate},
-           count:{$gt:0}
-        })
+        const slot = await BookingSlot.findOne({ 
+          providerId,
+          date: { $gt: selectedDate, $lte: nextDate },
+          count: { $gt: 0 },
+          $expr: { $gt: ["$count", "$bookedCount"] }
+        });
+        
 
         if(!slot){
            return {success:false, message:"No slot is avaliable"}
         }
+
+        const avaliableSlot = slot.count - slot.bookedCount
         
-        return {success:true, message:`${slot.count} is avaliable`, slotId:slot._id+""}
+        return {success:true, message:`${avaliableSlot} is avaliable`, slotId:slot._id+""}
       
     } catch (error) {
         console.log("Error in checkAvaliableSlot: ",error);
@@ -407,6 +411,24 @@ async updateBooking(paymentIntent: string, bookingId: string): Promise<{ success
             if(!updateBooking){
               return{success:false, message:"Failed to updateBooking"}
             }
+
+            const slotId = updateBooking.slotId;
+            const providerId = updateBooking.providerId;
+            
+
+            const updateBookingSlot = await BookingSlot.findOneAndUpdate(
+                               {providerId:providerId,_id:slotId},
+                               {
+                                 $inc:{bookedCount:1}
+                               },
+                               {new:true}
+            )
+
+            if(!updateBookingSlot){
+               return {success:false, message:"Failed to update Booking slot"}
+            }
+
+
 
             return {success:true, message:"updated"}
         
@@ -496,6 +518,80 @@ async updateProfileImageRepo(userId: string, imageUrl: string): Promise<{ succes
       
     }
 }
+
+ async getAllBookingsRepo(userId: string): Promise<{ success: boolean; message?: string; bookingData?: any; }> {
+     try {
+            console.log("This is userId: ", userId)
+            const fetchedBookings = await BookingModel.aggregate([
+              {
+                $match: {
+                  userId: new mongoose.Types.ObjectId(userId),
+                },
+              },
+              {
+                $lookup: {
+                  from: "services", 
+                  localField: "serviceId", 
+                  foreignField: "_id", 
+                  as: "serviceDetails", 
+                },
+              },
+              {
+                $unwind: "$serviceDetails", 
+              },
+              {
+                $lookup:{
+                  from:"providers",
+                  localField:"providerId",
+                  foreignField:"_id",
+                  as:"providerDetails"
+                }
+              },
+              {
+                $unwind:"$providerDetails"
+              },
+              {
+                $project: {
+                  _id: 1,
+                  serviceType: 1,
+                  userId: 1,
+                  providerId: 1,
+                  slotId: 1,
+                  serviceId: 1,
+                  vehicleDetails: 1,
+                  location: 1,
+                  userPhone: 1,
+                  bookingDate: 1,
+                  amount: 1,
+                  platformFee: 1,
+                  subTotal: 1,
+                  paymentId: 1,
+                  reason: 1,
+                  paymentStatus: 1,
+                  status: 1,
+                  selectedSubServices: 1,
+                  createdAt: 1,
+                  updatedAt: 1,
+                  __v: 1,
+                  serviceName:"$serviceDetails.serviceType", 
+                  providerName:"$providerDetails.workshopName"
+                },
+              },
+            ]);
+            console.log("This is the fetchedBookings: ", fetchedBookings)
+
+            if(!fetchedBookings){
+                return{success:false, message:"Failed to fetch all bookings"}
+            }
+
+                return {success:true, bookingData:fetchedBookings}
+      
+     } catch (error) {
+        console.log("Error occured in getAllBookingsRepo: ", error);
+        return{success:false, message:"Something went wrong in getAllBookingsRepo"}
+      
+     }
+ }
 
 
 }

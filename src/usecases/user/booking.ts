@@ -87,6 +87,18 @@ class UserBookingInteractor implements IUserBookingInteractor{
           return { success: false, message: "Something went wrong in successfulPaymentStatusChangeUseCase" };
         }
       }
+
+      async getAllBookingsUseCase(userId: string): Promise<{ success: boolean; message?: string; bookingData?: any; }> {
+          try {
+                const response = await this.userRepository.getAllBookingsRepo(userId);
+                return response
+            
+          } catch (error) {
+             console.log("Error in getAllBookingsUseCase: ", error);
+             return {success:false, message:"Somthing went wrong in getAllBookingsUseCase"}
+            
+          }
+      }
       
    
 }

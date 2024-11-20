@@ -9,6 +9,7 @@ interface IUserBookingInteractor{
    checkingAvaliableSlotUseCase(providerId:string, date:string):Promise<{success:boolean, message?:string, slotId?:string}>
    serviceBookingPaymentUseCase(data:IBookingData):Promise<{success:boolean, message?:string , session?:any}>
    successfullPaymentStatusChangeUseCase(paymentSessionId:string, bookId:string):Promise<{success:boolean, message?:string}>
+   getAllBookingsUseCase(userId:string):Promise<{success:boolean, message?:string, bookingData?:any }>
 }
 
 export default IUserBookingInteractor

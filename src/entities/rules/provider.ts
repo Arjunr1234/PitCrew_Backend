@@ -261,7 +261,8 @@ export interface IAddSlotData{
 export interface ISlotData{
 _id:string,
 date:Date,
-count:number
+count:number,
+bookedCount?:number
 }
 
 // Add slotData - useCase
@@ -276,14 +277,18 @@ export interface ISlotDataUseCase{
   _id:string,
   date:Date,
   count:number
+  
   }
+
+  
 
   // get all slot data
 
  export interface IGetSlotData{
     _id:string,
     date:Date,
-    count:number
+    count:number,
+    bookedCount:number
   }
 
 

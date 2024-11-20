@@ -21,6 +21,7 @@ interface iUserRepository{
   getUserDetailsRepo(userId:string):Promise<{success:boolean, message?:string, userData?:IUserData}>
   editUserProfileRepo(data:IProfileData):Promise<{success:boolean, message?:string}>
   updateProfileImageRepo(userId:string, imageUrl:string):Promise<{success:boolean, message?:string, prevImgUrl?:string | null, newImgUrl?:string}>
+  getAllBookingsRepo(userId:string):Promise<{success:boolean, message?:string, bookingData?:any}>
 }
 
 

@@ -2,6 +2,8 @@ import express from 'express';
 import UserRepository from '../../../../interface_adapters/repository/userRepository';
 import UserBookingInteractor from '../../../../usecases/user/booking';
 import UserBookingController from '../../../../interface_adapters/controllers/user/userBooking';
+import verification from '../../middleware/jwtAuthentication';
+import { role } from '../../../../entities/rules/constants';
 
 const userBookingRoute = express.Router();
 
@@ -14,11 +16,12 @@ const controller = new UserBookingController(interactor);
 
 //========================== Routes ==========================
 
-userBookingRoute.post('/service-booking-payment', controller.serviceBookingPayment.bind(controller));
+userBookingRoute.post('/service-booking-payment',verification(role.user), controller.serviceBookingPayment.bind(controller));
 
-userBookingRoute.get('/check-avaliable-slot', controller.checkAvaliableSlot.bind(controller));
+userBookingRoute.get('/check-avaliable-slot',verification(role.user), controller.checkAvaliableSlot.bind(controller));
+userBookingRoute.get('/get-all-bookings', controller.getAllBookings.bind(controller))
 
-userBookingRoute.patch('/change-payment-status-success', controller.successfullPaymentStatusChange.bind(controller))
+userBookingRoute.patch('/change-payment-status-success',verification(role.user), controller.successfullPaymentStatusChange.bind(controller))
 
 
 

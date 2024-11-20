@@ -3,6 +3,7 @@ import AdminRepository from '../../../../interface_adapters/repository/adminRepo
 import AdminUserInteractor from '../../../../usecases/admin/adminUser';
 import AdminUserCotroller from '../../../../interface_adapters/controllers/admin/adminUser';
 import verification from '../../middleware/jwtAuthentication';
+import { role } from '../../../../entities/rules/constants';
 
 
 
@@ -13,8 +14,8 @@ const controller = new AdminUserCotroller(interactor);
 
 //=============Routes=========================//
 
-adminUserRouter.get('/get-user', verification('admin'), controller.getUser.bind(controller));
-adminUserRouter.patch('/user-block-unblock', verification('admin'), controller.userBlockAndUnblock.bind(controller))
+adminUserRouter.get('/get-user', verification(role.admin), controller.getUser.bind(controller));
+adminUserRouter.patch('/user-block-unblock', verification(role.admin), controller.userBlockAndUnblock.bind(controller))
 
 
 

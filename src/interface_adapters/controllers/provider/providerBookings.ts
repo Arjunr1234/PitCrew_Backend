@@ -51,7 +51,7 @@ class ProviderBookingsController {
       }
 
       const response = await this.providerBookingsInteractor.getAllSlotUseCase(providerId);
-
+      console.log("This is the getAll slotResponse: ", response)
       if (!response.success) {
         res.status(HttpStatus.BAD_REQUEST).json({ success: response.success, message: response.message });
         return
