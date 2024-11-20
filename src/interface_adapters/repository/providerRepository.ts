@@ -1,7 +1,7 @@
 import IproviderRepository, { IAllServices, IBrandData, IProviderServices, IServices } from "../../entities/irepository/iproviderRepo";
 import providerModel from "../../framework/mongoose/model/providerSchema";
 import OtpModel from "../../framework/mongoose/model/otpSchema";
-import { IAddBrandData, IAddingData, IAddSlotData, IAdminBrand, IEditSubType, IGetSlotData, ILogData, IProviderBrand, IProviderData,IProviderRegisterData,IProviderResponseData, IRemoveBrandData, IRemoveService, IRemoveSubTypeData, ISlotData, ISubTypeData } from "../../entities/rules/provider";
+import { IAddBrandData, IAddingData, IAddSlotData, IAdminBrand, IEditSubType, IGetSlotData, ILogData, IProfileEdit, IProviderBrand, IProviderData,IProviderRegisterData,IProviderResponseData, IRemoveBrandData, IRemoveService, IRemoveSubTypeData, ISlotData, ISubTypeData, IWorkshopData } from "../../entities/rules/provider";
 import bcrypt from 'bcrypt'
 import serviceModel from "../../framework/mongoose/model/serviceSchema";
 import brandModel from "../../framework/mongoose/model/brandSchema";
@@ -708,6 +708,92 @@ async getAllBrandsRepo(providerId: string): Promise<{
         message: "Something went wrong in removeSlotRepo",
       };
     }
+  }
+
+  async getProviderDetailsRepo(providerId: string): Promise<{ success: boolean; message?: string; providerData?: any; }> {
+      try {
+         
+           const fetchedProvider = await providerModel.findOne({_id:providerId});
+
+           if(!fetchedProvider){
+              return {success:false, message:"Failed to fetch Provider"}
+           }
+
+           const data = {
+               _id:fetchedProvider._id+"",
+               workshopName:fetchedProvider.workshopName,
+               ownerName:fetchedProvider.ownerName,
+               mobile:fetchedProvider.mobile,
+               email:fetchedProvider.email,
+               workshopDetails:fetchedProvider.workshopDetails,
+               about:fetchedProvider.about,
+               logoUrl:fetchedProvider.logoUrl
+           }
+          
+
+           return {success:true, providerData:data }
+      } catch (error) {
+         console.log("Error in getProviderDetailsRepo: ", error)
+         return{success:false, message:"Something went wrong in getProviderDetailsRepo"}
+      }
+  }
+
+  async editProfileRepo(data: IProfileEdit): Promise<{ success: boolean; message?: string; }> {
+      try {
+
+         const {providerId, workshopName, ownerName, phone, about} = data
+
+         const updateProvider = await providerModel.findByIdAndUpdate(
+                      providerId,
+                      {
+                        $set:{
+                          workshopName:workshopName,
+                          ownerName:ownerName,
+                          mobile:phone,
+                          about:about
+                        }
+                      },
+                      {new:true}
+         )
+
+         if(!updateProvider){
+            return{success:false, message:'Failed to update Provider'}
+         }
+           
+         return {success:true, message:"Successfully updated"}
+        
+      } catch (error) {
+          console.log("Error in editProfileRepo: ", error);
+          return {success:false, message:"Something went wrong"}
+        
+      }
+  }
+
+  async updateProfileImageRepo(providerId: string, imageUrl: string): Promise<{ success: boolean; message?: string; prevImgUrl?: string | null; newImgUrl?: string; }> {
+        try {
+             const prevData = await providerModel.findById(providerId).select('logoUrl');
+
+             const updateImage = await providerModel.findByIdAndUpdate(
+                                          providerId,
+                                          {
+                                            $set:{
+                                              logoUrl:imageUrl
+                                            }
+                                          },
+                                          {new:true}
+             );
+             
+
+             if(!updateImage){
+                 return{success:false, message:"Something went wrong in updateImage"}
+             }
+                return{success:true,  message:"Successfully updated", newImgUrl:updateImage.logoUrl, prevImgUrl:prevData?.logoUrl}
+          
+        } catch (error) {
+             console.log("Error occured in the updateProfileImage Repo: ", error);
+             return {success:false, message:"Something went wrong in updateProfileImage Repo"}
+          
+        }
   }
   
   

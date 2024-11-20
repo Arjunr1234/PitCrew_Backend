@@ -359,4 +359,37 @@ export interface IBookingData {
   platformFee:number
 }
 
+// provider profile fetching providerData
+
+interface Location {
+  type: string;
+  coordinates: [number, number]; 
+}
+
+interface WorkshopDetails {
+  address: string;
+  location: Location;
+}
+
+export interface IWorkshopData {
+  _id: string;
+  workshopName: string;
+  ownerName: string;
+  email: string;
+  mobile: string;
+  workshopDetails: WorkshopDetails;
+  logoUrl: string;
+  about: string;
+}
+
+// provider profileEditData usecase and repo
+export interface IProfileEdit {
+  workshopName: string;
+  ownerName: string;
+  phone: string;
+  about: string;
+  providerId: string;
+}
+
+
   

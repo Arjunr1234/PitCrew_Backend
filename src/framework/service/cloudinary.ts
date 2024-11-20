@@ -26,21 +26,29 @@ class CloudinaryService implements ICloudinaryService {
   }
 
 
-   extractPublicId (url:string):string {
+  extractPublicId(url: string): string {
     const parts = url.split('/');
     
-    const versionIndex = parts.findIndex((part:string) => part.startsWith('v'));
-    parts.splice(versionIndex, 1);
-  
+    // Find the index of the version string (starts with 'v')
+    const versionIndex = parts.findIndex((part: string) => part.startsWith('v'));
     
-    const publicIdWithExtension = parts.slice(parts.indexOf('userprofilePic')).join('/');
+    if (versionIndex === -1 || versionIndex + 1 >= parts.length) {
+      throw new Error('Invalid Cloudinary URL. Cannot extract public_id.');
+    }
+  
+    // Get the public ID with extension
+    const publicIdWithExtension = parts.slice(versionIndex + 1).join('/');
+  
+    // Remove the extension from the public ID
     return publicIdWithExtension.split('.').slice(0, -1).join('.');
-  };
+  }
+  
 
   async deleteImage(imageUrl: string): Promise<{ success?: boolean; message?: string }> {
     try {
       const publicId = this.extractPublicId(imageUrl);
-  
+      console.log("This is imageUrl: ", imageUrl)
+      console.log("This is publicID: ", publicId)
       if (!publicId) {
         throw new Error('Invalid image URL. Cannot extract public_id.');
       }

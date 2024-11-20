@@ -1,4 +1,4 @@
-import { IAddBrandData, IAddingData, IAddSlotData, IAdminBrand, IEditSubType, IGetSlotData, ILogData, IProviderBrand, IProviderData,IProviderRegisterData,IProviderResponseData, IRemoveBrandData, IRemoveService, IRemoveSubTypeData, ISlotData, ISubTypeData, ProviderModel } from "../rules/provider";
+import { IAddBrandData, IAddingData, IAddSlotData, IAdminBrand, IEditSubType, IGetSlotData, ILogData, IProfileEdit, IProviderBrand, IProviderData,IProviderRegisterData,IProviderResponseData, IRemoveBrandData, IRemoveService, IRemoveSubTypeData, ISlotData, ISubTypeData, IWorkshopData, IworkshopDetails, ProviderModel } from "../rules/provider";
 import { Types } from "mongoose";
 
 interface IproviderRepository{
@@ -20,7 +20,9 @@ interface IproviderRepository{
       getAllSlotRepo(providerId:string):Promise<{success:boolean, message?:string, slotData?:IGetSlotData[]}>
       updateSlotCountRepo(slotId:string, state:number):Promise<{success:boolean, message?:string}>
       removeSlotRepo(slotId:string):Promise<{success:boolean, message?:string}>
-
+      getProviderDetailsRepo(providerId:string):Promise<{success:boolean, message?:string, providerData?:any}>//IworkshopData (the above)
+      editProfileRepo(data:IProfileEdit):Promise<{success:boolean, message?:string}>
+      updateProfileImageRepo(providerId:string, imageUrl:string):Promise<{success:boolean, message?:string, prevImgUrl?:string | null, newImgUrl?:string}>
 }
 
 
