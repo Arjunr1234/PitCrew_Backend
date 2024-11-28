@@ -23,6 +23,7 @@ interface IproviderRepository{
       getProviderDetailsRepo(providerId:string):Promise<{success:boolean, message?:string, providerData?:any}>//IworkshopData (the above)
       editProfileRepo(data:IProfileEdit):Promise<{success:boolean, message?:string}>
       updateProfileImageRepo(providerId:string, imageUrl:string):Promise<{success:boolean, message?:string, prevImgUrl?:string | null, newImgUrl?:string}>
+      getAllBookingRepo(providerId:string):Promise<{success:boolean, message?:string, bookingData?:any}>
 }
 
 

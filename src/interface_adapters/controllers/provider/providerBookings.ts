@@ -114,6 +114,33 @@ class ProviderBookingsController {
          }
   }
 
+  async getAllBookings(req:Request, res:Response, next:NextFunction){
+      try {
+            const providerId = req.query.providerId as string
+
+            if(!providerId){
+              res.status(HttpStatus.BAD_REQUEST).json({success:false, message:"Please provide Id"})
+              return
+            }
+
+            const response = await this.providerBookingsInteractor.getAllBookingsUseCase(providerId);
+            console.log("This si reh resposne: ", response)
+
+            if(!response.success){
+               res.status(HttpStatus.BAD_REQUEST).json({success:response.success, message:response.message})
+               return
+            }
+
+              res.status(HttpStatus.OK).json({success:response.success, bookingData:response.bookingData })
+
+        
+      } catch (error) {
+          console.log("Error in getAllBookingsController: ", error);
+          next(error);
+        
+      }
+  }
+
   
 
   

@@ -11,6 +11,7 @@ import { response } from "express";
 import BookingSlot from "../../framework/mongoose/model/BookingSlotSchema";
 import mongoose from "mongoose";
 import { error } from "console";
+import BookingModel from "../../framework/mongoose/model/BookingSchema";
 
 class ProviderRepository implements IproviderRepository {
 
@@ -631,7 +632,7 @@ async getAllBrandsRepo(providerId: string): Promise<{
   async getAllSlotRepo(providerId: string): Promise<{ success: boolean; message?: string; slotData?: IGetSlotData[]; }> {
       try {
 
-        const findAllSlot = await BookingSlot.find({}).sort({date:1})
+        const findAllSlot = await BookingSlot.find({providerId:providerId}).sort({date:1})
 
         const data = findAllSlot.map((slot) => ({
           _id:slot._id+"",
@@ -798,7 +799,83 @@ async getAllBrandsRepo(providerId: string): Promise<{
         }
   }
   
-  
+  async getAllBookingRepo(providerId: string): Promise<{ success: boolean; message?: string; bookingData?: any; }> {
+      try {
+             
+
+             const fetchBooking = await BookingModel.aggregate([
+              {
+                $match: {
+                  providerId: new mongoose.Types.ObjectId(providerId),
+                },
+              },
+              {
+                $lookup:{
+                  from:"users",
+                  localField:"userId",
+                  foreignField:"_id",
+                  as:"userData"
+                }
+              },
+              {$unwind:"$userData"},
+              {
+                $lookup: {
+                  from: "services", 
+                  localField: "serviceId", 
+                  foreignField: "_id", 
+                  as: "serviceDetails", 
+                },
+              },
+              {
+                $unwind: "$serviceDetails", 
+              },
+              {
+                $project:{
+                  _id:1,
+                  serviceType:1,
+                  userId:1,
+                  providerId:1,
+                  slotId:1,
+                  serviceId:1,
+                  vehicleDetails:1,
+                  location:1,
+                  bookingDate:1,
+                  amount:1,
+                  platformFee:1,
+                  subTotal:1,
+                  paymentId:1,
+                  reason:1,
+                  paymentStatus:1,
+                  status:1,
+                  selectedServices:1,
+                  userData:{
+                    _id:1,
+                    name:1,
+                    phone:1,
+                    email:1, 
+                    imageUrl:1,
+                  },
+                  serviceDetails:{
+                    _id:1,
+                    category:1,
+                    serviceType:1,
+                    imageUrl:1
+                  }
+                }
+              }
+            ]);
+
+             if(!fetchBooking){
+                return {success:false, message:"Failed to fetchBooking"}
+             }
+
+             return {success:true, bookingData:fetchBooking}       
+      } catch (error) {
+            console.log("Error in getAllBookingRepo", error);
+            return {success:false, message:"Something went wrong in getAllBookingRepo"}
+        
+      }
+  }
   
 
   

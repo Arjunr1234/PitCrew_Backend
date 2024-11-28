@@ -60,6 +60,18 @@ class ProviderBookingsInteractor implements IProviderBookingsInteractor{
   }
 
 
+  async getAllBookingsUseCase(providerId: string): Promise<{ success: boolean; message?: string; bookingData?: any; }> {
+       try {
+           const response = await this.BookingsRepository.getAllBookingRepo(providerId);
+           return response
+       } catch (error) {
+           console.log("Error in getAllBookingUseCase: ", error);
+           return{success:false, message:"Something went wrong in getAllBookingsUseCase"}
+        
+       }
+  }
+
+
 
 
 }

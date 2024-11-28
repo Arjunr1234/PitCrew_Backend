@@ -574,7 +574,15 @@ async updateProfileImageRepo(userId: string, imageUrl: string): Promise<{ succes
                   updatedAt: 1,
                   __v: 1,
                   serviceName:"$serviceDetails.serviceType", 
-                  providerName:"$providerDetails.workshopName"
+                  providerDetails: {
+                    _id: 1,
+                    workshopName: 1,
+                    ownerName: 1,
+                    workshopDetails:1,
+                    email: 1,
+                    mobile: 1, 
+                    logoUrl:1   
+                  },
                 },
               },
             ]);
