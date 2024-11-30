@@ -12,6 +12,8 @@ const controller = new ChatController(interactor);
 
 
 
+chatRouter.get('/get-all-chats', controller.getAllChats.bind(controller))
+
 
 
 

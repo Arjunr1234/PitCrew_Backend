@@ -830,6 +830,17 @@ async getAllBrandsRepo(providerId: string): Promise<{
                 $unwind: "$serviceDetails", 
               },
               {
+                $lookup:{
+                  from:"providers",
+                  localField:"providerId",
+                  foreignField:"_id",
+                  as:"providerData"
+                }
+              },
+              {
+                $unwind:"$providerData"
+              },
+              {
                 $project:{
                   _id:1,
                   serviceType:1,
@@ -847,7 +858,8 @@ async getAllBrandsRepo(providerId: string): Promise<{
                   reason:1,
                   paymentStatus:1,
                   status:1,
-                  selectedServices:1,
+                  selectedSubServices:1,
+                  providerImage:"$providerData.logoUrl",
                   userData:{
                     _id:1,
                     name:1,
@@ -865,6 +877,8 @@ async getAllBrandsRepo(providerId: string): Promise<{
               }
             ]);
 
+            console.log("This is the fucking data: ", fetchBooking)
+
              if(!fetchBooking){
                 return {success:false, message:"Failed to fetchBooking"}
              }
@@ -875,6 +889,27 @@ async getAllBrandsRepo(providerId: string): Promise<{
             return {success:false, message:"Something went wrong in getAllBookingRepo"}
         
       }
+  }
+
+  async  changeBookingStatusRepo(bookingId: string, status: string): Promise<{ success: boolean; message?: string }> {
+    try {
+      
+
+      const result = await BookingModel.updateOne(
+        { _id: bookingId },
+        { $set: { status } } 
+      );
+  
+      if (result.modifiedCount === 0) {
+        return { success: false, message: "No booking found with the given ID or status is already the same" };
+      }
+  
+      return { success: true, message: "Booking status updated successfully" };
+  
+    } catch (error) {
+      console.log("Error in changeBookingStatusRepo: ", error);
+      return { success: false, message: "Something went wrong in changeBookingStatusRepo" };
+    }
   }
   
 

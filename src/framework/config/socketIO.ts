@@ -36,6 +36,7 @@ const configSocketIO = (server:HttpServer) => {
            }
 
            socket.on("joinChatRoom", ({providerId, userId, online}) => {
+            console.log("Enteed into join chat room: ", providerId, userId, online)
                  const roomName = [providerId, userId].sort().join("-");
                  if(online === 'USER'){
                     socket.join(roomName);
@@ -56,14 +57,16 @@ const configSocketIO = (server:HttpServer) => {
                  
            });
 
-           socket.on("sendMessages", async ({messageDetails}) => {
+           socket.on("sendMessage", async ({messageDetails}) => {
                try {
-
+                  console.log("This si the messge: ", messageDetails)
                   let savedMessage: any  = null;
 
                   const connectionDetails:any  = await chatInteractorInstance.createChatUseCase(messageDetails);
 
+
                   savedMessage = connectionDetails.chatData;
+                  console.log("This is savedmessge: ", savedMessage)
 
                   let chatRoom : string;
 
@@ -90,7 +93,7 @@ const configSocketIO = (server:HttpServer) => {
       
     } catch (error) {
 
-      
+      console.log("Error in configSocketIO ", error)
     }
 }
 

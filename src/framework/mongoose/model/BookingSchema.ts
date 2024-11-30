@@ -36,8 +36,8 @@ export interface BookingDocument extends Document {
   subTotal:number,
   paymentId: string;
   reason: string;
-  paymentStatus:"pending" | "completed" | "cancelled" | "success"
-  status: 'pending' | 'confirmed' | 'cancelled' | 'completed';
+  paymentStatus:"pending" | "completed" | "cancelled" | "success" | "refunded" | "failed"
+  status: 'pending' | 'confirmed' | 'cancelled' | 'completed' | 'accepted' | 'work progress' | 'ready for delivery' | 'delayed' ;
   selectedSubServices: SubService[]; 
   createdAt: Date;
   updatedAt: Date;
@@ -120,12 +120,12 @@ const BookingSchema: Schema<BookingDocument> = new Schema<BookingDocument>({
   },
   paymentStatus: {
     type: String,
-    enum: ['pending',  'cancelled', 'completed', 'success'],
+    enum: ['pending',  'cancelled', 'completed', 'success',"refunded", "failed"],
     default: 'pending',
   },
   status: {
     type: String,
-    enum: ['pending', 'confirmed', 'cancelled', 'completed'],
+    enum: ['pending', 'confirmed', 'cancelled', 'completed',"accepted", "work progress", "ready for delivery", "delayed"],
     default: 'pending',
   },
   selectedSubServices: [

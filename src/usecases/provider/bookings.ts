@@ -70,6 +70,17 @@ class ProviderBookingsInteractor implements IProviderBookingsInteractor{
         
        }
   }
+  async changeBookingStatusUseCase(bookingId: string, status: string): Promise<{ success: boolean; message?: string; }> {
+       try {
+             const response = await this.BookingsRepository.changeBookingStatusRepo(bookingId, status);
+             return response
+        
+       } catch (error) {
+           console.log("Error in changeBookingStatusUseCase: ", error);
+           return{success:false, message:"Something went wrong in change bookingStatusUseCase"}
+        
+       }
+  }
 
 
 

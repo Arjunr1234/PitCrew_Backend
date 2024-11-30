@@ -23,16 +23,17 @@ class ChatRepository implements IChatRepository{
               userId: messageDetails.senderId,
             };
   
+      const message = {
+        sender:messageDetails.sender,
+        message:messageDetails.message,
+        type:"text"
+      }
       
       const existingChat = await ChatModel.findOneAndUpdate(
         query,
         {
           $push: {
-            message: {
-              sender: messageDetails.sender,
-              message: messageDetails.message,
-              type: "text",
-            },
+            messages: message
           },
         },
         { new: true, upsert: true }
@@ -43,6 +44,23 @@ class ChatRepository implements IChatRepository{
       console.error("Error in createChatRepo:", error);
       return { success: false };
     }
+  }
+
+  async getAllChatRepo(userId: string, providerId: string): Promise<{ success: boolean; message?: string; chatData?: any; }> {
+      try {
+           const findedChats = await ChatModel.findOne({providerId:providerId, userId:userId}).select("messages")
+
+           if(!findedChats){
+              return {success:false, message:"Failed to get chat message"}
+           }
+
+           return{success:true, chatData:findedChats}
+        
+      } catch (error) {
+          console.log("Error in getAllChatRepo: ", error);
+          return {success:false, message:"Something went wrong in getAllChatRepo "}
+        
+      }
   }
   
 }

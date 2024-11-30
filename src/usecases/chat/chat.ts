@@ -18,6 +18,18 @@ class ChatInteractor implements IChatInteractor{
               return {success:false}
          }
     }
+
+    async getAllChatsUseCase(userId: string, providerId: string): Promise<{ success: boolean; message?: string; chatData?: any; }> {
+        try {
+              const response = await this.ChatRepository.getAllChatRepo(userId, providerId);
+              return response
+          
+        } catch (error) {
+            console.log("Error in getAllChatUseCase: ", error);
+            return {success:false, message:"Something went wrong in getAllChatUseCase "}
+          
+        }
+    }
   
 }
 

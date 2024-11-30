@@ -551,6 +551,17 @@ async updateProfileImageRepo(userId: string, imageUrl: string): Promise<{ succes
                 $unwind:"$providerDetails"
               },
               {
+                $lookup:{
+                  from:"users",
+                  localField:"userId",
+                  foreignField:"_id",
+                  as:"userDetails"
+                }
+              },
+              {
+                $unwind:"$userDetails"
+              },
+              {
                 $project: {
                   _id: 1,
                   serviceType: 1,
@@ -583,6 +594,7 @@ async updateProfileImageRepo(userId: string, imageUrl: string): Promise<{ succes
                     mobile: 1, 
                     logoUrl:1   
                   },
+                  userImage:"$userDetails.imageUrl"
                 },
               },
             ]);

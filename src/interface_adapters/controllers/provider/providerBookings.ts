@@ -141,6 +141,34 @@ class ProviderBookingsController {
       }
   }
 
+  async changeBookingStatus(req:Request, res:Response, next:NextFunction){
+       try {
+            const bookingId = req.body?.bookingId;
+            const status = req.body?.status;
+
+            if(!bookingId || !status){
+                res.status(HttpStatus.BAD_REQUEST).json({success:false, message:"Please provide the necessary data"});
+                return 
+            }
+
+            const response = await this.providerBookingsInteractor.changeBookingStatusUseCase(bookingId, status);
+
+            if(!response.success){
+              res.status(HttpStatus.BAD_REQUEST).json({success:response.success, message:response.message})
+              return
+            }
+
+            res.status(HttpStatus.OK).json({success:response.success, message:response.message})
+
+             
+        
+       } catch (error) {
+           console.log("Error in changeBookingStatus: ", error);
+           next(error)
+        
+       }
+  }
+
   
 
   
