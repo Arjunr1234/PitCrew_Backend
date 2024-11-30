@@ -11,6 +11,7 @@ import brandModel from "../../framework/mongoose/model/brandSchema";
 import vehicleTypeModel from "../../framework/mongoose/model/vehicleTypeSchema";
 import providerServiceModel from "../../framework/mongoose/model/providerServiceSchema";
 import mongoose from "mongoose";
+import BookingModel from "../../framework/mongoose/model/BookingSchema";
 
 
 class AdminRepository implements IAdminRepository{
@@ -495,6 +496,98 @@ async deleteServiceRepo(id: string): Promise<{ success: boolean; message?: strin
      }
  }
 
+
+ async getAllBookingsRepo(): Promise<{ success: boolean; message?: string; bookingData?: any; }> {
+       try {
+             const bookingData = await BookingModel.aggregate([
+              {
+                $match:{}
+              },
+              {
+                 $lookup:{
+                    from:"users",
+                    localField:"userId",
+                    foreignField:"_id",
+                    as:"userDetails"
+                 }
+                  
+                },
+                {
+                  $unwind:"$userDetails"
+                },
+                {
+                  $lookup:{
+                    from:"providers",
+                    localField:"providerId",
+                    foreignField:"_id",
+                    as:"providerDetails"
+                  }
+                },
+                {
+                  $unwind:"$providerDetails"
+                },
+                {
+                  $lookup:{
+                    from:"services",
+                    localField:"serviceId",
+                    foreignField:"_id",
+                    as:"serviceDetails"
+                  }
+                },
+                {
+                   $unwind:"$serviceDetails"
+                },
+                {
+                  $project:{
+                    _id:1,
+                    serviceType:1,
+                    userId:1,
+                    providerId:1,
+                    slotId:1,
+                    serviceId:1,
+                    vehicleDetails:1,
+                    location:1,
+                    bookingDate:1,
+                    amount:1,
+                    platformFee:1,
+                    subTotal:1,
+                    paymentId:1,
+                    reason:1,
+                    status:1,
+                    serviceName:"$serviceDetails.serviceType",
+                    selectedSubServices:1,
+                    userDetails:{
+  
+                      name:1,
+                      phone:1,
+                      email:1,
+                      imageUrl:1
+                    },
+                    providerDetails:{
+                      
+                      workshopName:1,
+                      ownerName:1,
+                      email:1,
+                      mobile:1,
+                      workshopDetails:1,
+                      logoUrl:1
+                    }
+                  }
+                }
+             ]);
+
+             if(!bookingData){
+                return{success:false, message:"Failed to fetch the bookings"}
+             }
+             //console.log("Thsi is the data: ", bookingData)
+             return {success:true, bookingData:bookingData}
+        
+       } catch (error) {
+           console.log("Error in getAllBookingsRepo: ", error);
+           return{success:false, message:"Something went wrong in getAllBookingsRepo"}
+        
+       }
+ }
 
 
 
