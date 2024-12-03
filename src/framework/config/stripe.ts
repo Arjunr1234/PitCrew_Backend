@@ -58,3 +58,24 @@ export const confimPayment = async (paymentSessionId:string) => {
           
       }
 }
+
+export const refundPayment = async (paymentIntent: string, refundAmount: number) => {
+  try {
+     
+     const refund = await stripe.refunds.create({
+       payment_intent: paymentIntent,
+       amount: refundAmount,
+     });
+
+     
+     if (refund.status === 'succeeded') {
+         return { success: true, message: "Refund successful" };
+     } else {
+         return { success: false, message: "Refund failed" };
+     }
+   
+  } catch (error) {
+     console.log("Error in refund: ", error);
+     return { success: false, message: "Error in Stripe refund" };
+  }
+};

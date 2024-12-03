@@ -22,6 +22,7 @@ const controller = new ProviderProfileController(interactor);
 providerProfileRoute.get('/get-provider-details', controller.getProviderDetails.bind(controller))
 
 providerProfileRoute.put('/edit-profile', controller.editProfile.bind(controller));
+providerProfileRoute.put('/reset-password', controller.resetPassword.bind(controller))
 
 providerProfileRoute.post('/update-profile-pic', upload.single('image'), controller.updateProfilePic.bind(controller))
 

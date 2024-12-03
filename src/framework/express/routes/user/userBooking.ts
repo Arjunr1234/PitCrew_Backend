@@ -19,7 +19,9 @@ const controller = new UserBookingController(interactor);
 userBookingRoute.post('/service-booking-payment',verification(role.user), controller.serviceBookingPayment.bind(controller));
 
 userBookingRoute.get('/check-avaliable-slot',verification(role.user), controller.checkAvaliableSlot.bind(controller));
-userBookingRoute.get('/get-all-bookings', controller.getAllBookings.bind(controller))
+userBookingRoute.get('/get-all-bookings', controller.getAllBookings.bind(controller));
+
+userBookingRoute.put('/cancell-booking', controller.cancellBooing.bind(controller))
 
 userBookingRoute.patch('/change-payment-status-success',verification(role.user), controller.successfullPaymentStatusChange.bind(controller))
 

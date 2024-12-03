@@ -22,6 +22,9 @@ interface iUserRepository{
   editUserProfileRepo(data:IProfileData):Promise<{success:boolean, message?:string}>
   updateProfileImageRepo(userId:string, imageUrl:string):Promise<{success:boolean, message?:string, prevImgUrl?:string | null, newImgUrl?:string}>
   getAllBookingsRepo(userId:string):Promise<{success:boolean, message?:string, bookingData?:any}>
+  resetPasswordRepo(userId:string, currentPassword:string, newPassword:string):Promise<{success:boolean, message?:string}>
+  getCancelledBookingRepo(bookingId:string):Promise<{success:boolean, message?:string, bookingData?:any}>
+  updateBookingAfterRefundRepo(bookingId:string, reason:string, refundAmount:number, refundStatus:string):Promise<{success:boolean, message?:string}>
 }
 
 

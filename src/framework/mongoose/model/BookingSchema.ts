@@ -13,6 +13,10 @@ interface LocationDetails {
   address: string;
   coordinates: [number, number];
 }
+interface RefundDetails {
+  amount: number | null;
+  status: string | null;
+}
 
 interface SubService {
   type: string;
@@ -37,6 +41,7 @@ export interface BookingDocument extends Document {
   paymentId: string;
   reason: string;
   paymentStatus:"pending" | "completed" | "cancelled" | "success" | "refunded" | "failed"
+  refund: RefundDetails;
   status: 'pending' | 'confirmed' | 'cancelled' | 'completed' | 'accepted' | 'work progress' | 'ready for delivery' | 'delayed' | 'Delivered' ;
   selectedSubServices: SubService[]; 
   createdAt: Date;
@@ -123,6 +128,17 @@ const BookingSchema: Schema<BookingDocument> = new Schema<BookingDocument>({
     enum: ['pending',  'cancelled', 'completed', 'success',"refunded", "failed"],
     default: 'pending',
   },
+  refund: {
+    amount: {
+      type: Number,
+      default: null, 
+    },
+    status: {
+      type: String,
+      enum:['partial refund', 'full refund'],
+      default: null, 
+    },
+  },
   status: {
     type: String,
     enum: ['pending', 'confirmed', 'cancelled', 'completed',"accepted", "work progress", "ready for delivery", "delayed","Delivered"],
@@ -133,7 +149,7 @@ const BookingSchema: Schema<BookingDocument> = new Schema<BookingDocument>({
       type: {
         type: String,
         required: true,
-      },
+      }, 
       startingPrice: {
         type: String,
         required: true,

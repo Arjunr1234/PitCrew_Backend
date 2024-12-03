@@ -1,7 +1,8 @@
 import iUserRepository from "../../entities/irepository/iuserRepository";
 import { IBookingData } from "../../entities/rules/provider";
 import IUserBookingInteractor from "../../entities/user/ibooking";
-import { confimPayment, makePayment } from "../../framework/config/stripe";
+import { confimPayment, makePayment, refundPayment } from "../../framework/config/stripe";
+import {differenceInHours} from 'date-fns'
 
 
 
@@ -96,6 +97,54 @@ class UserBookingInteractor implements IUserBookingInteractor{
           } catch (error) {
              console.log("Error in getAllBookingsUseCase: ", error);
              return {success:false, message:"Somthing went wrong in getAllBookingsUseCase"}
+            
+          }
+      }
+
+      async cancellBooingUseCase(bookingId: string, reason:string): Promise<{ success: boolean; message?: string; }> {
+          try {
+
+
+            const getBookingData = await this.userRepository.getCancelledBookingRepo(bookingId);
+
+            if(!getBookingData.success){
+               return {success:getBookingData.success, message:getBookingData.message} 
+            }
+
+             const currentTime = new Date();
+             const scheduledDateTime = new Date(getBookingData.bookingData.serviceDate);
+
+             const hourDifference = differenceInHours(scheduledDateTime, currentTime);
+
+             let refundAmount:number;
+             let refundStatus:string
+             if(hourDifference >= 24){
+                refundAmount = getBookingData.bookingData.subTotal - getBookingData.bookingData.platformFee
+                refundStatus = "full refund"
+
+             }else if(hourDifference > 0){
+                refundAmount = (getBookingData.bookingData.subTotal - getBookingData.bookingData.platformFee) * .75
+                refundStatus = "partial refund"
+
+             }else {
+              return { success: false, message: "Cancellation not allowed after the booking time has passed" };
+
+            }
+
+             const refund = await refundPayment(getBookingData.bookingData.paymentId, refundAmount);
+
+             if(!refund.success){
+                return {success:refund.success, message:refund.message}
+             }
+
+             const updateBooking = await this.userRepository.updateBookingAfterRefundRepo(bookingId, reason, refundAmount, refundStatus);
+
+              return updateBooking
+            
+            
+          } catch (error) {
+             console.log("Error in cancellBookingUseCase: ", error);
+             return {success:false, message:"Something went wrong in cancellBooingUsecase"}
             
           }
       }

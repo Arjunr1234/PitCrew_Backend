@@ -911,7 +911,39 @@ async getAllBrandsRepo(providerId: string): Promise<{
       return { success: false, message: "Something went wrong in changeBookingStatusRepo" };
     }
   }
+
+
+  async  resetPasswordRepo(
+    providerId: string,
+    currentPassword: string,
+    newPassword: string
+  ): Promise<{success:boolean, message?:string}> {
+    try {
+      
+      const provider = await providerModel.findById(providerId); 
+      if (!provider) {
+        return { success: false, message: 'Provider not found' };
+      }
   
+      
+      const isPasswordValid = await bcrypt.compare(currentPassword, provider.password);
+      if (!isPasswordValid) {
+        return { success: false, message: 'Current password is incorrect' };
+      }
+  
+      
+      const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+  
+      
+      provider.password = hashedNewPassword;
+      await provider.save(); 
+  
+      return { success: true, message: 'Password reset successfully' };
+    } catch (error) {
+      console.error('Error in resetPasswordRepo: ', error);
+      return { success: false, message: 'Something went wrong in resetPasswordRepo' };
+    }
+  }
 
   
 }

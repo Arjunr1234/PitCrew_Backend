@@ -78,6 +78,33 @@ class ProviderProfileController{
           
          }
     }
+
+   async resetPassword(req: Request, res: Response, next: NextFunction) {
+      try {
+
+         const { providerId, currentPassword, newPassword } = req.body
+
+         if (!providerId || !currentPassword || !newPassword) {
+            res.status(HttpStatus.BAD_REQUEST).json({ success: false, message: "Please provide necessary data" })
+            return
+         }
+
+         const response = await this.providerProfileInteractor.resetPasswordUseCase(providerId, currentPassword, newPassword);
+
+         if(!response.success){
+             res.status(HttpStatus.BAD_REQUEST).json({success:response.success, message:response.message});
+             return
+         }
+
+            res.status(HttpStatus.OK).json({success:response.success, message:response.message})
+
+
+      } catch (error) {
+         console.log("Error in resetPassword controller");
+         next(error)
+
+      }
+   }
 }
 
 export default ProviderProfileController

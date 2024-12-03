@@ -62,6 +62,17 @@ class UserProfileInteractor implements IUserProfileInteractor{
           
          }
    }  
+
+   async resetPasswordUseCase(userId: string, currentPassword: string, newPassword: string): Promise<{ success: boolean; message?: string; }> {
+      try {
+            const response = await this.userRepository.resetPasswordRepo(userId, currentPassword, newPassword);
+            return response
+          
+      } catch (error) {
+            console.log("Error in resetPassword : ", error);
+            return {success:false, message:"Something went wrong in resetPasswordUseCase"}         
+      }
+  }
      
 }
 

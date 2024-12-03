@@ -25,6 +25,7 @@ interface IproviderRepository{
       updateProfileImageRepo(providerId:string, imageUrl:string):Promise<{success:boolean, message?:string, prevImgUrl?:string | null, newImgUrl?:string}>
       getAllBookingRepo(providerId:string):Promise<{success:boolean, message?:string, bookingData?:any}>
       changeBookingStatusRepo(bookingId:string, status:string):Promise<{success:boolean, message?:string}>
+      resetPasswordRepo(providerId:string, currentPassword:string, newPassword:string):Promise<{success:boolean, message?:string}>
 }
 
 

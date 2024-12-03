@@ -23,6 +23,7 @@ userProfileRoute.get('/get-user',verification(role.user), controller.getUserDeta
 userProfileRoute.patch('/edit-profile',verification(role.user), controller.editUserProfile.bind(controller));
 
 userProfileRoute.put('/add-profile-pic',verification(role.user), controller.updateImage.bind(controller));
+userProfileRoute.put('/reset-password', controller.resetPassword.bind(controller))
 
 userProfileRoute.post('/update-profile-img',verification(role.user), upload.single('image'), controller.updateProfileImage.bind(controller))
 

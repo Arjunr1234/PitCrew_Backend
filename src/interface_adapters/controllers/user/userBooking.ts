@@ -105,6 +105,35 @@ class UserBookingController{
          }
     }
 
+    async cancellBooing(req:Request, res:Response, next:NextFunction){
+        try {
+            const bookingId = req.body.bookingId as string;
+            const reason = req.body.reason as string
+            
+             if(!bookingId || !reason){
+                res.status(HttpStatus.BAD_REQUEST).json({success:false, message:"Please provider bookingId and reason"});
+                return 
+             }
+
+             const response = await this.userBookingInteractor.cancellBooingUseCase(bookingId, reason);
+
+             if(!response.success){
+                res.status(HttpStatus.BAD_REQUEST).json({success:response.success, message:response.message})
+                return 
+             }
+
+               res.status(HttpStatus.OK).json({success:response.success, message:response.message})
+
+
+
+            
+        } catch (error) {
+             console.log("Error in cancellBooking: ", error);
+             next(error)
+            
+        }
+    }
+
 }
 
 export default UserBookingController

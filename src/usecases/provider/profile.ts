@@ -61,6 +61,18 @@ class ProviderProfileInteractor implements IProviderProfileInteractor{
           
         }
     }
+
+    async resetPasswordUseCase(providerId: string, currentPassword: string, newPassword: string): Promise<{ success: boolean; message?: string; }> {
+        try {
+              const response = await this.providerProfileRepo.resetPasswordRepo(providerId, currentPassword, newPassword);
+              return response
+            
+        } catch (error) {
+              console.log("Error in resetPassword : ", error);
+              return {success:false, message:"Something went wrong in resetPassword"}
+            
+        }
+    }
 }
 
 export default ProviderProfileInteractor

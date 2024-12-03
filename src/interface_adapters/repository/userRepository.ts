@@ -338,7 +338,9 @@ async checkAvaliableSlotRepo(providerId: string, date: string): Promise<{success
 async  serviceBookingRepo(data: any): Promise<{success:boolean, message?:string, bookingDetails?:any}> {
   try {
     console.log("This is the serviceBookingData in Repo:", data);
-
+    // const getSlot = await BookingSlot.findOne(data.slotId)
+    // const bookingDate = getSlot?.date;
+    // console.log("This is the bookingDate: ", new Date(bookingDate))
     
     const bookingData = {
       serviceType: 'general', 
@@ -526,6 +528,7 @@ async updateProfileImageRepo(userId: string, imageUrl: string): Promise<{ succes
               {
                 $match: {
                   userId: new mongoose.Types.ObjectId(userId),
+                  paymentStatus:"success",
                 },
               },
               {
@@ -613,6 +616,110 @@ async updateProfileImageRepo(userId: string, imageUrl: string): Promise<{ succes
      }
  }
 
+ async  resetPasswordRepo(
+  userId: string,
+  currentPassword: string,
+  newPassword: string
+): Promise<{success:boolean, message?:string}> {
+  try {
+    
+    const user = await userModel.findById(userId); 
+    if (!user) {
+      return { success: false, message: 'user is  not found' };
+    }
+
+    
+    const isPasswordValid = await bcrypt.compare(currentPassword, user.password);
+    if (!isPasswordValid) {
+      return { success: false, message: 'Current password is incorrect' };
+    }
+
+    
+    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+
+    
+    user.password = hashedNewPassword;
+    await user.save(); 
+
+    return { success: true, message: 'Password reset successfully' };
+  } catch (error) {
+    console.error('Error in resetPasswordRepo: ', error);
+    return { success: false, message: 'Something went wrong in resetPasswordRepo' };
+  }
+}
+
+ async getCancelledBookingRepo(bookingId: string): Promise<{ success: boolean; message?: string; bookingData?: any; }> {
+    try {
+       console.log(bookingId);
+       
+       const booking = await BookingModel.aggregate([
+        {
+          $match: { _id: new mongoose.Types.ObjectId(bookingId) } 
+        },
+        {
+          $lookup: {
+            from: "bookingslots", 
+            localField: "slotId",  
+            foreignField: "_id",   
+            as: "slotDetails"     
+          }
+        },
+        {
+          $unwind:"$slotDetails"
+        },
+        {
+          $project:{
+            paymentId:1,
+            serviceDate:"$slotDetails.date",
+            amount:1,
+            platformFee:1,
+            subTotal:1
+          }
+        }
+        
+       
+       ])
+       console.log("This si teh booking taken before cancell: ", booking)
+
+       if(!booking){
+          return {success:false, message:"Failed to fetch cancelled booking"}
+       }
+      
+        return {success:true, message:"successfully fetched cancelled booking", bookingData:booking[0]}
+      
+    } catch (error) {
+        console.log("Error occured in finding cancelled booking");
+        return {success:false, message:"Something went wrong getCancelled bookingRepo"}
+       
+    }
+}
+
+async updateBookingAfterRefundRepo(bookingId: string, reason: string, refundAmount: number, refundStatus: string): Promise<{ success: boolean; message?: string; }> {
+    try {
+      
+      const updateBooking = await BookingModel.findByIdAndUpdate(
+         bookingId,
+         {$set:{
+          "refund.amount":refundAmount,
+          "refund.status":refundStatus,
+          reason:reason,
+          status:"cancelled"
+         },
+        },
+        {new:true}
+         
+      )
+      if(!updateBooking){
+         return {success:false, message:"Failed to update booking after refund"}
+      }
+
+      return{success:true, message:"Successfully updated booking after refund"}
+    } catch (error) {
+        console.log('Error in updateBookingAfterRefund: ', error);
+        return {success:false, message:"Something went wrong in updateBookingAfterRefundRepo"}
+      
+    }
+}
 
 }
 
