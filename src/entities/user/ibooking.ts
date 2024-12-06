@@ -1,4 +1,4 @@
-import { IBookingData } from "../rules/provider"
+import { IBookingData, IRatingData } from "../rules/provider"
 
 
 
@@ -11,6 +11,7 @@ interface IUserBookingInteractor{
    successfullPaymentStatusChangeUseCase(paymentSessionId:string, bookId:string):Promise<{success:boolean, message?:string}>
    getAllBookingsUseCase(userId:string):Promise<{success:boolean, message?:string, bookingData?:any }>
    cancellBooingUseCase(bookingId:string, reason:string):Promise<{success:boolean, message?:string}>
+   addRatingUseCase(ratingData:IRatingData):Promise<{success:boolean, message?:string}>
 }
 
 export default IUserBookingInteractor

@@ -945,6 +945,219 @@ async getAllBrandsRepo(providerId: string): Promise<{
     }
   }
 
+  async getSingleBookingRepo(bookingId: string): Promise<{ success: boolean; message?: string; bookingData?: any; }> {
+      try {
+
+         const booking = await BookingModel.findById(bookingId).select("reviewAdded");
+         let fetchedBookingData
+
+         !booking?.reviewAdded ?
+            // if review is not added there is no review data(otherwise there will a error occur)
+           fetchedBookingData = await BookingModel.aggregate([
+             {$match:
+              {_id:new mongoose.Types.ObjectId(bookingId)}
+             },
+             {
+              $lookup:{
+                from:"users",
+                localField:"userId",
+                foreignField:"_id",
+                as:"userData"
+              }
+            },
+            {$unwind:"$userData"},
+            {
+              $lookup: {
+                from: "services", 
+                localField: "serviceId", 
+                foreignField: "_id", 
+                as: "serviceDetails", 
+              },
+            },
+            {
+              $unwind: "$serviceDetails", 
+            },
+           
+            // {
+            //   $lookup:{
+            //     from:"ratingreviews", 
+            //     localField:"_id",
+            //     foreignField:"bookingId",
+            //     as:"rating"
+            //   }
+            // },
+            // {
+            //   $unwind:"$rating"
+            // },
+            {
+              $lookup:{
+                from:"providers",
+                localField:"providerId",
+                foreignField:"_id",
+                as:"providerDetails"
+              }
+            },
+            {
+              $unwind:"$providerDetails"
+            },
+            {
+              $project:{
+                _id:1,
+                serviceType:1,
+                userId:1,
+                providerId:1,
+                slotId:1,
+                serviceId:1,
+                vehicleDetails:1,
+                location:1,
+                bookingDate:1,
+                amount:1,
+                platformFee:1,
+                subTotal:1,
+                paymentId:1,
+                reason:1,
+                paymentStatus:1,
+                status:1,
+                selectedSubServices:1,
+                reviewAdded:1,
+                
+               
+                providerDetails:{
+                      workshopName:1,
+                      ownerName:1,
+                      email:1,
+                      mobile:1,
+                      workshopDetails:1,
+                      logoUrl:1
+                    },
+                providerImage:"$providerData.logoUrl",
+                userData:{
+                  _id:1,
+                  name:1,
+                  phone:1,
+                  email:1, 
+                  imageUrl:1,
+                },
+                serviceDetails:{
+                  _id:1,
+                  category:1,
+                  serviceType:1,
+                  imageUrl:1
+                }
+              }
+            }
+             
+          ]):
+          fetchedBookingData = await BookingModel.aggregate([
+            {$match:
+             {_id:new mongoose.Types.ObjectId(bookingId)}
+            },
+            {
+             $lookup:{
+               from:"users",
+               localField:"userId",
+               foreignField:"_id",
+               as:"userData"
+             }
+           },
+           {$unwind:"$userData"},
+           {
+             $lookup: {
+               from: "services", 
+               localField: "serviceId", 
+               foreignField: "_id", 
+               as: "serviceDetails", 
+             },
+           },
+           {
+             $unwind: "$serviceDetails", 
+           },
+          
+           {
+             $lookup:{
+               from:"ratingreviews", 
+               localField:"_id",
+               foreignField:"bookingId",
+               as:"rating"
+             }
+           },
+           {
+             $unwind:"$rating"
+           },
+           {
+             $lookup:{
+               from:"providers",
+               localField:"providerId",
+               foreignField:"_id",
+               as:"providerDetails"
+             }
+           },
+           {
+             $unwind:"$providerDetails"
+           },
+           {
+             $project:{
+               _id:1,
+               serviceType:1,
+               userId:1,
+               providerId:1,
+               slotId:1,
+               serviceId:1,
+               vehicleDetails:1,
+               location:1,
+               bookingDate:1,
+               amount:1,
+               platformFee:1,
+               subTotal:1,
+               paymentId:1,
+               reason:1,
+               paymentStatus:1,
+               status:1,
+               selectedSubServices:1,
+               reviewAdded:1,
+               rating:{
+                 rating:1,
+                 feedback:1
+               },
+              
+               providerDetails:{
+                     workshopName:1,
+                     ownerName:1,
+                     email:1,
+                     mobile:1,
+                     workshopDetails:1,
+                     logoUrl:1
+                   },
+               providerImage:"$providerData.logoUrl",
+               userData:{
+                 _id:1,
+                 name:1,
+                 phone:1,
+                 email:1, 
+                 imageUrl:1,
+               },
+               serviceDetails:{
+                 _id:1,
+                 category:1,
+                 serviceType:1,
+                 imageUrl:1
+               }
+             }
+           }
+            
+         ])
+
+          console.log("This is the fetchedBooking: ", fetchedBookingData)
+
+          return {success:true, bookingData:fetchedBookingData[0]}
+        
+      } catch (error) {
+          console.log("Error in getSingleBookingRepo: ", error);
+          return{success:false, message:"something went wrong in getSingleBookingRepo"}
+        
+      }
+  }
+
   
 }
 

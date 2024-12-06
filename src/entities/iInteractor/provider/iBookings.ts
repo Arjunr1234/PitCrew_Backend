@@ -10,6 +10,7 @@ export interface IProviderBookingsInteractor{
   removeSlotUseCase(slotId:string):Promise<{success:boolean, message?:string}>
   getAllBookingsUseCase(providerId:string):Promise<{success:boolean, message?:string, bookingData?:any}>
   changeBookingStatusUseCase(bookingId:string, status:string):Promise<{success:boolean, message?:string}>
+  getSingleBookingUseCase(bookingId:string):Promise<{success:boolean, message?:string, bookingData?:any}>
 
 }
 

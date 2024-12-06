@@ -169,7 +169,29 @@ class ProviderBookingsController {
        }
   }
 
-  
+  async getSingleBooking(req:Request, res:Response, next:NextFunction){
+       try {
+             const bookingId = req.query?.bookingId as string
+
+             if(!bookingId){
+              res.status(HttpStatus.BAD_REQUEST).json({success:false, message:"Please provide bookingId"})
+              return
+             }
+
+             const response = await this.providerBookingsInteractor.getSingleBookingUseCase(bookingId);
+
+             if(!response.success){
+                res.status(HttpStatus.BAD_REQUEST).json({success:response.success, message:response.message})
+                return 
+             }
+               res.status(HttpStatus.OK).json({success:response.success, message:response.message, bookingData:response.bookingData})
+        
+       } catch (error) {
+          console.log("Error in getSingleBooking: ", error);
+          next(error)
+        
+       }
+  }
 
   
 

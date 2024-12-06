@@ -396,5 +396,16 @@ export interface IProfileEdit {
   providerId: string;
 }
 
+// Review adding data
+
+export interface IRatingData {
+  userId: string;
+  providerId: string;
+  bookingId: string;
+  serviceId: string;
+  rating: number;
+  feedback: string;
+}
+
 
   

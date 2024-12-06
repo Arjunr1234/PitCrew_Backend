@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response, RequestHandler } from "express";
+import { NextFunction, Request, Response, RequestHandler, response } from "express";
 import jwt from "jsonwebtoken";
 import userModel from "../../mongoose/model/userSchema";
 import providerModel from "../../mongoose/model/providerSchema";
@@ -147,6 +147,8 @@ const verification = (type: "user" | "provider" | "admin"): RequestHandler => {
       res.status(500).json({ message: "Internal server error.", role: type });
     }
   };
+
+  
 };
 
 export default verification;

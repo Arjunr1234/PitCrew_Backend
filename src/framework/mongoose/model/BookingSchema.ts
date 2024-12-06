@@ -40,6 +40,7 @@ export interface BookingDocument extends Document {
   subTotal:number,
   paymentId: string;
   reason: string;
+  reviewAdded:boolean;
   paymentStatus:"pending" | "completed" | "cancelled" | "success" | "refunded" | "failed"
   refund: RefundDetails;
   status: 'pending' | 'confirmed' | 'cancelled' | 'completed' | 'accepted' | 'work progress' | 'ready for delivery' | 'delayed' | 'Delivered' ;
@@ -122,6 +123,10 @@ const BookingSchema: Schema<BookingDocument> = new Schema<BookingDocument>({
   },
   reason: {
     type: String,
+  },
+  reviewAdded:{
+    type:Boolean,
+    default:false
   },
   paymentStatus: {
     type: String,

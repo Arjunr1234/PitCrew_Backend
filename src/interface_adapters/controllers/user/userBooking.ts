@@ -134,6 +134,22 @@ class UserBookingController{
         }
     }
 
+    async addRating(req:Request, res:Response, next:NextFunction){
+        try {
+            const response = await this.userBookingInteractor.addRatingUseCase(req.body);
+
+            if(!response.success){
+                res.status(HttpStatus.BAD_REQUEST).json({success:response.success, message:response.message})
+            }
+
+                res.status(HttpStatus.CREATED).json({success:response.success, message:response.message})
+            
+        } catch (error) {
+             console.log("Error in addRatingController: ", error);
+             next(error);      
+        }
+    }
+
 }
 
 export default UserBookingController

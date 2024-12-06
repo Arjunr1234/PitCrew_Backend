@@ -1,5 +1,5 @@
 import iUserRepository from "../../entities/irepository/iuserRepository";
-import { IBookingData } from "../../entities/rules/provider";
+import { IBookingData, IRatingData } from "../../entities/rules/provider";
 import IUserBookingInteractor from "../../entities/user/ibooking";
 import { confimPayment, makePayment, refundPayment } from "../../framework/config/stripe";
 import {differenceInHours} from 'date-fns'
@@ -145,6 +145,18 @@ class UserBookingInteractor implements IUserBookingInteractor{
           } catch (error) {
              console.log("Error in cancellBookingUseCase: ", error);
              return {success:false, message:"Something went wrong in cancellBooingUsecase"}
+            
+          }
+      }
+
+      async addRatingUseCase(ratingData: IRatingData): Promise<{ success: boolean; message?: string; }> {
+          try {
+            const response = await this.userRepository.addRatingRepo(ratingData)
+            return response;
+            
+          } catch (error) {
+             console.log("Error in addRatingUseCase: ", error);
+             return{success:false, message:"Something went wrong in addRatingUseCase"}
             
           }
       }

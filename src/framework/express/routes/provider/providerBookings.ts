@@ -23,7 +23,8 @@ const controller = new ProviderBookingsController(interactor);
 providerBookingsRoute.post('/add-slot',verification(role.provider), controller.addSlot.bind(controller));
 
 providerBookingsRoute.get('/get-all-slot', controller.getAllSlot.bind(controller));
-providerBookingsRoute.get('/get-all-bookings', controller.getAllBookings.bind(controller))
+providerBookingsRoute.get('/get-all-bookings', controller.getAllBookings.bind(controller));
+providerBookingsRoute.get('/get-single-booking', controller.getSingleBooking.bind(controller))
 
 providerBookingsRoute.patch('/update-slot',verification(role.provider), controller.updateSlotCount.bind(controller));
 providerBookingsRoute.patch('/change-status', controller.changeBookingStatus.bind(controller))

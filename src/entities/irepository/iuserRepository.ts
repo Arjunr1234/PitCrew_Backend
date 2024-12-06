@@ -1,3 +1,4 @@
+import { IRatingData } from "../rules/provider"
 import { IBrandData, IDetails, IProfileData, IProvidersData, IServiceData, IUserData, user } from "../rules/user"
 import { userResponseData } from "../rules/user"
 import { userSignIn } from "../rules/user"
@@ -25,6 +26,7 @@ interface iUserRepository{
   resetPasswordRepo(userId:string, currentPassword:string, newPassword:string):Promise<{success:boolean, message?:string}>
   getCancelledBookingRepo(bookingId:string):Promise<{success:boolean, message?:string, bookingData?:any}>
   updateBookingAfterRefundRepo(bookingId:string, reason:string, refundAmount:number, refundStatus:string):Promise<{success:boolean, message?:string}>
+  addRatingRepo(ratingData:IRatingData):Promise<{success:boolean, message?:string}>
 }
 
 

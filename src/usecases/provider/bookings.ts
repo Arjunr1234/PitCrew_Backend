@@ -82,7 +82,16 @@ class ProviderBookingsInteractor implements IProviderBookingsInteractor{
        }
   }
 
-
+   async getSingleBookingUseCase(bookingId: string): Promise<{ success: boolean; message?: string; bookingData?: any; }> {
+       try {
+             const response = await this.BookingsRepository.getSingleBookingRepo(bookingId)
+             return response
+       } catch (error) {
+            console.log('Error in getSingleBookingUseCase: ', error);
+            return {success:false, message:"Something went wrong in getSingleBookingUseCase"}
+        
+       }
+   }
 
 
 }

@@ -17,6 +17,7 @@ const controller = new UserBookingController(interactor);
 //========================== Routes ==========================
 
 userBookingRoute.post('/service-booking-payment',verification(role.user), controller.serviceBookingPayment.bind(controller));
+userBookingRoute.post('/add-rating', controller.addRating.bind(controller));
 
 userBookingRoute.get('/check-avaliable-slot',verification(role.user), controller.checkAvaliableSlot.bind(controller));
 userBookingRoute.get('/get-all-bookings', controller.getAllBookings.bind(controller));

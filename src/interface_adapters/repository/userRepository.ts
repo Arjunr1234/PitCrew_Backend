@@ -10,6 +10,8 @@ import mongoose, { ObjectId } from "mongoose";
 import providerServiceModel from "../../framework/mongoose/model/providerServiceSchema";
 import BookingSlot from "../../framework/mongoose/model/BookingSlotSchema";
 import BookingModel from "../../framework/mongoose/model/BookingSchema";
+import { IRatingData } from "../../entities/rules/provider";
+import RatingModel from "../../framework/mongoose/model/ratingSchema";
 
 class UserRepository implements iUserRepository {
 
@@ -338,9 +340,20 @@ async checkAvaliableSlotRepo(providerId: string, date: string): Promise<{success
 async  serviceBookingRepo(data: any): Promise<{success:boolean, message?:string, bookingDetails?:any}> {
   try {
     console.log("This is the serviceBookingData in Repo:", data);
-    // const getSlot = await BookingSlot.findOne(data.slotId)
-    // const bookingDate = getSlot?.date;
-    // console.log("This is the bookingDate: ", new Date(bookingDate))
+    /////////////////////////////////////////////////////////////
+    const slotId = new mongoose.Types.ObjectId(data.slotId);
+
+    // Query the BookingSlot collection
+    const getSlot = await BookingSlot.findOne({ _id: slotId });
+
+    if (!getSlot) {
+        console.log("No slot found for the given ID");
+        
+    }
+
+    const bookingDate = getSlot?.date ?? new Date();
+    console.log("This is the bookingDate: ", new Date(bookingDate));
+    ////////////////////////////////////////////////////////////////
     
     const bookingData = {
       serviceType: 'general', 
@@ -364,7 +377,7 @@ async  serviceBookingRepo(data: any): Promise<{success:boolean, message?:string,
       },
 
       userPhone: data.userPhone,
-      bookingDate: new Date(), 
+      bookingDate: bookingDate, 
       amount: data.totalPrice,
       platformFee:data.platformFee,
       subTotal:(data.totalPrice + data.platformFee),
@@ -719,6 +732,48 @@ async updateBookingAfterRefundRepo(bookingId: string, reason: string, refundAmou
         return {success:false, message:"Something went wrong in updateBookingAfterRefundRepo"}
       
     }
+}
+
+
+
+async addRatingRepo(ratingData: IRatingData): Promise<{ success: boolean; message?: string }> {
+  try {
+    
+    const {bookingId, feedback, providerId,rating,serviceId, userId} = ratingData
+    const data = {
+      bookingId,
+      userId,
+      providerId,
+      serviceId,
+      rating,
+      feedback
+    }
+    const newRating = await RatingModel.create(data);
+
+    if (!newRating) {
+      return { success: false,message: 'Failed to add rating and review'  };
+    }
+
+    const updateBooking = await BookingModel.findByIdAndUpdate(
+         bookingId,
+         {
+          $set:{
+            reviewAdded:true
+          }
+         },
+         {new:true}
+    )
+   
+    if(!updateBooking){
+      return{success:false, message:"Failed to update isReviewAdded status"}
+    }
+
+
+    return { success: true, message: 'Rating and review added successfully.' };
+  } catch (error) {
+    console.error('Error in AddRatingRepo: ', error);
+    return { success: false, message: 'Something went wrong in addRatingRepo.' };
+  }
 }
 
 }

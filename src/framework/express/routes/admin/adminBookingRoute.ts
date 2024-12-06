@@ -15,4 +15,5 @@ adminBookingRoute.get('/get-all-bookings', controller.getAllBookings.bind(contro
 
 
 
+
 export default adminBookingRoute
