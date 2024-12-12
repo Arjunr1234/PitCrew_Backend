@@ -12,6 +12,7 @@ import BookingSlot from "../../framework/mongoose/model/BookingSlotSchema";
 import BookingModel from "../../framework/mongoose/model/BookingSchema";
 import { IRatingData } from "../../entities/rules/provider";
 import RatingModel from "../../framework/mongoose/model/ratingSchema";
+import notificationModel from "../../framework/mongoose/model/notificationSchema";
 
 class UserRepository implements iUserRepository {
 
@@ -352,7 +353,7 @@ async  serviceBookingRepo(data: any): Promise<{success:boolean, message?:string,
     }
 
     const bookingDate = getSlot?.date ?? new Date();
-    console.log("This is the bookingDate: ", new Date(bookingDate));
+    //console.log("This is the bookingDate: ", new Date(bookingDate));
     ////////////////////////////////////////////////////////////////
     
     const bookingData = {
@@ -404,6 +405,8 @@ async  serviceBookingRepo(data: any): Promise<{success:boolean, message?:string,
       return { success: false, message: "Failed to book service in repo" };
     }
 
+   
+
     return { success: true, bookingDetails: serviceBooking };
   } catch (error) {
     console.error("Error in serviceBookingRepo:", error);
@@ -442,6 +445,29 @@ async updateBooking(paymentIntent: string, bookingId: string): Promise<{ success
             if(!updateBookingSlot){
                return {success:false, message:"Failed to update Booking slot"}
             }
+
+            const service = await serviceModel.findById(updateBooking.serviceId);
+
+            //console.log("This is that servcie:   ", service)
+
+            const userNotificationContent = {
+              content: `Your ${service?.serviceType} booked successfully `,
+              type: "booking",  
+              read: false,
+              bookingId:bookingId
+          };
+          
+          const createNotification = await notificationModel.findOneAndUpdate(
+            {receiverId:new mongoose.Types.ObjectId(updateBooking.userId)},
+            {$push:{notifications:userNotificationContent}},
+            {new:true, upsert:true}
+          );
+
+          
+
+          if(!createNotification){
+             return {success:false, message:"Something went wrong in create Notification"}
+          }
 
 
 
@@ -775,6 +801,29 @@ async addRatingRepo(ratingData: IRatingData): Promise<{ success: boolean; messag
     return { success: false, message: 'Something went wrong in addRatingRepo.' };
   }
 }
+
+async getNotificationRepo(receiverId: string): Promise<{ success: boolean; message?: string; notificationData?: any; }> {
+    try {
+
+          const fetchNotification = await notificationModel.findOne({receiverId});
+
+          
+
+          if(!fetchNotification){
+               return {success:false, message:"Failed to fetch notification"}
+          } 
+
+          return {success:true, notificationData:fetchNotification}
+           
+      
+    } catch (error) {
+        console.log("Error in getNotification userRepo");
+        return {success:false, message:"Something went wrong in getNotificationRepo"}
+      
+    }
+}
+  
+
 
 }
 

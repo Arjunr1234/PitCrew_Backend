@@ -6,6 +6,7 @@ interface IMessage extends Document {
   message: string;
   type: "text";
   delete: boolean;
+  seen:boolean
 }
 
 
@@ -35,6 +36,10 @@ const messageSchema = new Schema<IMessage>(
     delete: {
       type: Boolean,
       default: false,
+    },
+    seen:{
+      type:Boolean,
+      default:false
     },
   },
   {

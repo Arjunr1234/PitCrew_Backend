@@ -39,7 +39,7 @@ class ChatRepository implements IChatRepository{
         { new: true, upsert: true }
       );
   
-      return { success: true, chatData: existingChat };
+      return { success: true, chatData: existingChat,  };
     } catch (error) {
       console.error("Error in createChatRepo:", error);
       return { success: false };

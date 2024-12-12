@@ -150,6 +150,27 @@ class UserBookingController{
         }
     }
 
+    async getNotification(req:Request, res:Response, next:NextFunction){
+          try {
+               const receiverId = req.query?.receiverId as string;
+
+               if(!receiverId){
+                  res.status(HttpStatus.BAD_REQUEST).json({success:false, message:"Please provider receiverId"})
+                  return
+               }
+               const response = await this.userBookingInteractor.getNotificationUseCase(receiverId);
+               if(!response.success){
+                  res.status(HttpStatus.BAD_REQUEST).json({success:false, message:response.message});
+                  return
+               }
+               res.status(HttpStatus.OK).json({success:response.success, message:response.message, notification:response.notificationData})
+            
+          } catch (error) {
+              console.log("Error in getNotification controller")
+              next(error)
+          }
+    }
+
 }
 
 export default UserBookingController

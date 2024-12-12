@@ -161,6 +161,17 @@ class UserBookingInteractor implements IUserBookingInteractor{
           }
       }
       
+      async getNotificationUseCase(receiverId: string): Promise<{ success: boolean; message?: string; notificationData?: any; }> {
+          try {
+               const response = await this.userRepository.getNotificationRepo(receiverId);
+               return response
+            
+          } catch (error) {
+               console.log("Error in getNotificationUseCase: ", error);
+               return {success:false, message:"Something went wrong in getNotificationUseCase"}
+            
+          }
+      }
    
 }
 
