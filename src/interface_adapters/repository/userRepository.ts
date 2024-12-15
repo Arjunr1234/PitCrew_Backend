@@ -13,6 +13,7 @@ import BookingModel from "../../framework/mongoose/model/BookingSchema";
 import { IRatingData } from "../../entities/rules/provider";
 import RatingModel from "../../framework/mongoose/model/ratingSchema";
 import notificationModel from "../../framework/mongoose/model/notificationSchema";
+import { sendBookingNotification } from "../../framework/config/socketIO";
 
 class UserRepository implements iUserRepository {
 
@@ -431,7 +432,7 @@ async updateBooking(paymentIntent: string, bookingId: string): Promise<{ success
             }
 
             const slotId = updateBooking.slotId;
-            const providerId = updateBooking.providerId;
+            const providerId = updateBooking.providerId  ;
             
 
             const updateBookingSlot = await BookingSlot.findOneAndUpdate(
@@ -447,6 +448,7 @@ async updateBooking(paymentIntent: string, bookingId: string): Promise<{ success
             }
 
             const service = await serviceModel.findById(updateBooking.serviceId);
+            const user = await userModel.findById(updateBooking.userId)
 
             //console.log("This is that servcie:   ", service)
 
@@ -456,16 +458,29 @@ async updateBooking(paymentIntent: string, bookingId: string): Promise<{ success
               read: false,
               bookingId:bookingId
           };
+           const providerNotificationContent = {
+              content: `${user?.name} has booked a ${service?.serviceType}`,
+              type:"booking",
+              read:false, 
+              bookingId:bookingId
+           }
           
-          const createNotification = await notificationModel.findOneAndUpdate(
+          const createUserNotification = await notificationModel.findOneAndUpdate(
             {receiverId:new mongoose.Types.ObjectId(updateBooking.userId)},
             {$push:{notifications:userNotificationContent}},
             {new:true, upsert:true}
           );
+          const createProviderNotification = await notificationModel.findOneAndUpdate(
+            {receiverId:new mongoose.Types.ObjectId(updateBooking.providerId)},
+            {$push:{notifications:providerNotificationContent}},
+            {new:true, upsert:true}
+          );
+
+          await sendBookingNotification(providerId.toString(), providerNotificationContent)
 
           
 
-          if(!createNotification){
+          if(!createUserNotification || !createProviderNotification){
              return {success:false, message:"Something went wrong in create Notification"}
           }
 
@@ -718,7 +733,7 @@ async updateProfileImageRepo(userId: string, imageUrl: string): Promise<{ succes
         
        
        ])
-       console.log("This si teh booking taken before cancell: ", booking)
+      // console.log("This si teh booking taken before cancell: ", booking)
 
        if(!booking){
           return {success:false, message:"Failed to fetch cancelled booking"}
@@ -748,11 +763,26 @@ async updateBookingAfterRefundRepo(bookingId: string, reason: string, refundAmou
         {new:true}
          
       )
+
       if(!updateBooking){
-         return {success:false, message:"Failed to update booking after refund"}
+        return {success:false, message:"Failed to update booking after refund"}
+     }
+
+     
+      const updateSlot = await BookingSlot.findByIdAndUpdate(
+        updateBooking.slotId,
+        { $inc: { bookedCount: -1 } }, 
+        { new: true }
+      );
+  
+      if (!updateSlot) {
+        return { success: false, message: "Failed to update slot count after cancellation" };
       }
 
+
       return{success:true, message:"Successfully updated booking after refund"}
+
+
     } catch (error) {
         console.log('Error in updateBookingAfterRefund: ', error);
         return {success:false, message:"Something went wrong in updateBookingAfterRefundRepo"}
@@ -822,6 +852,27 @@ async getNotificationRepo(receiverId: string): Promise<{ success: boolean; messa
       
     }
 }
+
+async seenNotificationRepo(notificationId: string): Promise<{ success: boolean; message?: string; }> {
+  try {
+      const updateSeen = await notificationModel.updateOne(
+          { _id: notificationId }, 
+          {
+              $set: { "notifications.$[].read": true } 
+          }
+      );
+
+      if (updateSeen.matchedCount === 0) {
+          return { success: false, message: 'Document not found' };
+      }
+
+      return { success: true, message:"seen status updated successfully!!" };
+  } catch (error) {
+      console.error("Error in seenNotificationRepo: ", error);
+      return { success: false, message: 'Something went wrong in seenNotification' };
+  }
+}
+
   
 
 

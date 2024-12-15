@@ -60,17 +60,7 @@ const configSocketIO = (server:HttpServer) => {
                
              });
 
-          //  socket.on("typing", ({userId, providerId, isTyping, typer}) => {
-          //      console.log("This is the status; ", isTyping)
-          //      const roomName = [providerId, userId].sort().join("-");
-          //      if(typer === 'PROVIDER'){
-          //       io.to(roomName).emit("typing", {isTyping,  typer})
-          //      }
-          //      if(typer === 'USER'){
-          //       io.to(roomName).emit("typing", {isTyping,  typer})
-          //      }
-              
-          //  })  
+          
           socket.on("typing", ({ userId, providerId, isTyping, typer }) => {
             console.log("This is the status: ", isTyping);
           
@@ -80,6 +70,8 @@ const configSocketIO = (server:HttpServer) => {
             
             io.to(roomName).emit("typing", { isTyping, typer });
           });
+
+         
           
 
            socket.on("sendMessage", async ({messageDetails}) => {
@@ -92,8 +84,7 @@ const configSocketIO = (server:HttpServer) => {
 
                   savedMessage = connectionDetails.chatData;
                   
-                 // console.log("This is connectionDetails  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;: ", connectionDetails);
-
+            
                   let chatRoom : string;
 
                   if(messageDetails.sender === "provider"){
@@ -106,13 +97,45 @@ const configSocketIO = (server:HttpServer) => {
                      return
                   }
 
-                  io.to(chatRoom).emit("receiveMessage", savedMessage)
+                   const chatNotification = await chatInteractorInstance.createNotificationUseCase(messageDetails)
+                   const userSocketId = getReceiverSocketId(messageDetails.receiverId)
+                  io.to(chatRoom).emit("receiveMessage", savedMessage);
+                  console.log("This is userSocketId: ", userSocketId);
+                  console.log("This is chatNotificatioN: ", chatNotification.notification)
+                  io.to(userSocketId).emit("receiveNotification", chatNotification.notification)
                 
                } catch (error) {
                   console.error("Error in sendMessage handler:", error);
                 
                }
            });
+
+
+           socket.on("checkPersonIsOnline", async ({ userId, providerId, caller }) => {
+            console.log("Checking if person is online: ", { userId, providerId, caller });
+        
+            
+            let callerId = caller === 'user' ? userId : providerId;
+            let receiverId = caller === 'user' ? providerId : userId;
+        
+            
+            let socketId = getReceiverSocketId(callerId);
+        
+            
+            let onlineStatus = !!onlineUser[receiverId];
+        
+            console.log("callerId: ", callerId, "receiverId: ", receiverId);
+        
+            if (!socketId) {
+                console.error("No valid socket ID found for caller!");
+                return; 
+            }
+        
+            
+            io.to(socketId).emit("isPersonIsOnline", { success: onlineStatus });
+        });
+        
+        
 
            socket.on("disconnect", () => {
             const disconnectedUserId = Object.keys(userSocketMap).find(
@@ -134,4 +157,10 @@ const configSocketIO = (server:HttpServer) => {
     }
 }
 
-export {configSocketIO}
+const sendBookingNotification = (providerId:string, notification:any) => {
+       console.log("This is sendBookingNOtification: ", providerId, notification);
+       const userSocketId = getReceiverSocketId(providerId);
+       io.to(userSocketId).emit("receiveNotification", notification)
+}
+
+export {configSocketIO, sendBookingNotification}

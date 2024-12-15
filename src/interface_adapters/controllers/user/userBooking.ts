@@ -171,6 +171,32 @@ class UserBookingController{
           }
     }
 
+    async seenNotification(req:Request, res:Response, next:NextFunction){
+        try {
+            const notificationId = req.query.notificationId as string;
+
+            if(!notificationId){
+                res.status(HttpStatus.BAD_REQUEST).json({success:false, message:"Please provide seen Notification"});
+                return
+            }
+
+            const response = await this.userBookingInteractor.seenNotificationUseCase(notificationId);
+
+            if(!response.success){
+                res.status(HttpStatus.BAD_REQUEST).json({success:response.success, message:response.message});
+                return
+            }
+
+              res.status(HttpStatus.OK).json({success:response.success, message:response.message})
+               
+            
+        } catch (error) {
+             console.log("Error in seen Notification: ", error);
+             next(error);
+            
+        }
+    }
+
 }
 
 export default UserBookingController

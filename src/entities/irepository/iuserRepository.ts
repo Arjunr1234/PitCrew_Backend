@@ -28,6 +28,7 @@ interface iUserRepository{
   updateBookingAfterRefundRepo(bookingId:string, reason:string, refundAmount:number, refundStatus:string):Promise<{success:boolean, message?:string}>
   addRatingRepo(ratingData:IRatingData):Promise<{success:boolean, message?:string}>
   getNotificationRepo(receiverId:string):Promise<{success:boolean, message?:string, notificationData?:any}>
+  seenNotificationRepo(notificationId:string):Promise<{success:boolean, message?:string}>
 }
 
 

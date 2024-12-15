@@ -30,6 +30,17 @@ class ChatInteractor implements IChatInteractor{
           
         }
     }
+
+  async createNotificationUseCase(messageDetails: any): Promise<{ success: boolean; message?: string; notification?:any }> {
+        try {
+            const response = await this.ChatRepository.createNotificationRepo(messageDetails)
+            return response
+        } catch (error) {
+             console.log("Error in createNotification: ", error);
+             return{success:false, message:"Something went wrong in createNoticationUseCase"}
+            
+        }
+    }
   
 }
 

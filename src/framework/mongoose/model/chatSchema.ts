@@ -39,7 +39,7 @@ const messageSchema = new Schema<IMessage>(
     },
     seen:{
       type:Boolean,
-      default:false
+      default:true
     },
   },
   {

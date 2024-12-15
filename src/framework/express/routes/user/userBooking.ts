@@ -25,7 +25,8 @@ userBookingRoute.get('/get-notification', controller.getNotification.bind(contro
 
 userBookingRoute.put('/cancell-booking', controller.cancellBooing.bind(controller))
 
-userBookingRoute.patch('/change-payment-status-success',verification(role.user), controller.successfullPaymentStatusChange.bind(controller))
+userBookingRoute.patch('/change-payment-status-success',verification(role.user), controller.successfullPaymentStatusChange.bind(controller));
+userBookingRoute.patch('/notification-seen', controller.seenNotification.bind(controller));
 
 
 

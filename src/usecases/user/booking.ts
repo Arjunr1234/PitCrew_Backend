@@ -138,6 +138,7 @@ class UserBookingInteractor implements IUserBookingInteractor{
              }
 
              const updateBooking = await this.userRepository.updateBookingAfterRefundRepo(bookingId, reason, refundAmount, refundStatus);
+             
 
               return updateBooking
             
@@ -169,6 +170,18 @@ class UserBookingInteractor implements IUserBookingInteractor{
           } catch (error) {
                console.log("Error in getNotificationUseCase: ", error);
                return {success:false, message:"Something went wrong in getNotificationUseCase"}
+            
+          }
+      }
+
+      async seenNotificationUseCase(notificationId: string): Promise<{ success: boolean; message?: string; }> {
+          try {
+              const response = await this.userRepository.seenNotificationRepo(notificationId);
+              return response
+            
+          } catch (error) {
+              console.log("Error in seenNotificationUseCase: ", error);
+              return {success:false, message:"Something went wrong in seenNotificationUseCase"}
             
           }
       }
