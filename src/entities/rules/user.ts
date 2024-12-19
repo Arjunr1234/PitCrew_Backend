@@ -13,6 +13,7 @@ export interface userResponseData{
   email:string,
   mobile:string,
   blocked:boolean
+  image?:string
 }
 
 export interface userSignIn{

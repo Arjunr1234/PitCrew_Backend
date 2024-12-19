@@ -63,7 +63,8 @@ class UserRepository implements iUserRepository {
       name: createUser.name,
       email: createUser.email,
       mobile: createUser.phone.toString(),
-      blocked: createUser.blocked
+      blocked: createUser.blocked,
+      image:createUser.imageUrl
     };
 
     if (createUser) {
@@ -97,7 +98,8 @@ class UserRepository implements iUserRepository {
           name: user.name,
           email: user.email,
           mobile: user.phone + "" ,
-          blocked: user.blocked
+          blocked: user.blocked,
+          image:user.imageUrl
       };
 
       

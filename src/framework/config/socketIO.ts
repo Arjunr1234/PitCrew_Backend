@@ -112,7 +112,7 @@ const configSocketIO = (server:HttpServer) => {
 
 
            socket.on("checkPersonIsOnline", async ({ userId, providerId, caller }) => {
-            console.log("Checking if person is online: ", { userId, providerId, caller });
+          //  console.log("Checking if person is online: ", { userId, providerId, caller });
         
             
             let callerId = caller === 'user' ? userId : providerId;
@@ -124,7 +124,7 @@ const configSocketIO = (server:HttpServer) => {
             
             let onlineStatus = !!onlineUser[receiverId];
         
-            console.log("callerId: ", callerId, "receiverId: ", receiverId);
+           // console.log("callerId: ", callerId, "receiverId: ", receiverId);
         
             if (!socketId) {
                 console.error("No valid socket ID found for caller!");
@@ -134,7 +134,47 @@ const configSocketIO = (server:HttpServer) => {
             
             io.to(socketId).emit("isPersonIsOnline", { success: onlineStatus });
         });
-        
+
+        socket.on("createRoomForCall", ({userId, providerId, caller, callerData}) => {
+              console.log("userId: ",userId, "providerId: ", providerId, "caller: ", caller)
+              
+              const callerId = caller === 'user' ? userId : providerId;
+              const receiverId = caller === 'user' ? providerId : userId;
+              const roomId = [receiverId, callerId].sort().join('_');
+              socket.join(roomId + "");
+              console.log("Emitted to: ", receiverId)
+              io.to(getReceiverSocketId(receiverId)).emit('incommingCall', {success:true, receiverId, callerId, callerData });
+        })
+
+        socket.on("rejectCall", ({ callerId, receiverId}) => {
+               io.to(getReceiverSocketId(callerId)).emit("callRejected", {callerId, receiverId})
+        });
+
+
+        socket.on("callAccepted", ({success, callerId, receiverId, caller})=> {
+          const roomId = [receiverId, callerId].sort().join('_');
+          socket.join(roomId + "");
+          io.to(getReceiverSocketId(callerId)).emit("callAccepted", {success, callerId, receiverId, caller})
+
+        });
+
+        socket.on("sendOffer", ({receiverId, offer, callerId}) => {
+           console.log("Entered into sendeOffer to receiver socket offer: ", offer)
+           io.to(getReceiverSocketId(receiverId)).emit("sendOfferToReceiver", {offer, callerId})
+        });
+
+        socket.on("answer", ({answer, to}) => {
+          console.log('This is the answer to the caller: ', answer);
+          io.to(getReceiverSocketId(to)).emit("receiveAnswer", {answer})
+        });
+
+        socket.on("sendCandidate", ({event, id, sender }) => {
+           console.log("signaling;  sendIcecandidate: ", event);
+           console.log("This is the sender: ", sender);
+           
+           console.log("This is thhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh fucking callerId: ", id)
+           io.to(getReceiverSocketId(id)).emit("receiveCandidate", {event})
+        })
         
 
            socket.on("disconnect", () => {
@@ -150,6 +190,8 @@ const configSocketIO = (server:HttpServer) => {
               console.log(`${disconnectedUserId} disconnected, remaining online users:`, onlineUser);
             }
            })
+
+          
       })
     } catch (error) {
 
