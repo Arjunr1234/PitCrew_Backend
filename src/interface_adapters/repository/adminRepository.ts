@@ -590,7 +590,83 @@ async deleteServiceRepo(id: string): Promise<{ success: boolean; message?: strin
  }
 
 
+   async getDashboardDetailsRepo(): Promise<{ success: boolean; message?: string; dashboradData?: any; }> {
+      try {
+        
+        const users = await userModel.countDocuments({});
+        const providers = await providerModel.countDocuments({});
+        const bookings = await BookingModel.find({});
+        const revenue = bookings.reduce((sum, booking) => sum+booking.platformFee,0 );
 
+        const statusDetails = await BookingModel.aggregate([
+           {
+            $group:{
+              _id:"$status",
+              count:{$sum:1}
+            }
+           },
+           {
+            $project:{
+              _id:0,
+              status:"$_id",
+              count:1
+            }
+           }
+        ]);
+
+       
+        const lineData = await BookingModel.aggregate([
+          {
+            $group: {
+              _id: { month: { $month: "$bookingDate" } }, 
+              totalRevenue: { $sum: "$platformFee" }, 
+              bookingCount: { $sum: 1 } 
+            }
+          },
+          {
+            $project: {
+              _id: 0, 
+              name: { 
+                $arrayElemAt: [
+                  ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+                  { $subtract: ["$_id.month", 1] } 
+                ]
+              },
+              revenue: "$totalRevenue", 
+              bookings: "$bookingCount" 
+            }
+          },
+          {
+            $sort: { name: 1 } 
+          }
+        ]);
+        
+        //console.log(lineData);
+        
+
+        // console.log("This is the users count: ", users);
+        // console.log("This is the providers count: ", providers);
+        // console.log("This is the totalRevenue; ", revenue);
+        // console.log("This is the status Details: ", statusDetails);
+        // console.log("This is the lineData: ", lineData)
+
+        
+       const dashboardData = {
+          users,
+          providers,
+          revenue,
+          statusDetails,
+          lineData
+       }
+
+        return {success:true, dashboradData:dashboardData}
+        
+      } catch (error) {
+          console.log("Error in getDashboradDetailsRepo: ", error);
+          return {success:false, message:"Something went wrong in getDashboardDetailsRepo "}
+        
+      }
+  }
 
 }
 

@@ -20,6 +20,20 @@ class AdminBookingInteractor implements IAdminBookingInteractor{
           
          }
      }
+
+    async getDashboradDetailsUseCase(): Promise<{ success: boolean; message?: string; dashboardData?: any; }> {
+          try {
+
+              const response = await this.adminBookingRepository.getDashboardDetailsRepo();
+              
+              return response
+            
+          } catch (error) {
+              console.log("Error in getDashboardData: ", error);
+              return {success:false, message:"Something went wrong in getDashboardDetailsUseCase"}
+            
+          }
+    }
 }
 
 export default AdminBookingInteractor

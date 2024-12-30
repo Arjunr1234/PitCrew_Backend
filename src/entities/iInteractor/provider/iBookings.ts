@@ -11,6 +11,7 @@ export interface IProviderBookingsInteractor{
   getAllBookingsUseCase(providerId:string):Promise<{success:boolean, message?:string, bookingData?:any}>
   changeBookingStatusUseCase(bookingId:string, status:string):Promise<{success:boolean, message?:string}>
   getSingleBookingUseCase(bookingId:string):Promise<{success:boolean, message?:string, bookingData?:any}>
+  getDashboardDetailsUseCase(providerId:string):Promise<{success:boolean, message?:string, dashboardData?:any}>
 
 }
 

@@ -93,6 +93,20 @@ class ProviderBookingsInteractor implements IProviderBookingsInteractor{
        }
    }
 
+   async getDashboardDetailsUseCase(providerId: string): Promise<{ success: boolean; message?: string; dashboardData?: any; }> {
+        try {
+            
+          const response = await this.BookingsRepository.getDashboardDetailsRepo(providerId);
+          return response
+
+          
+        } catch (error) {
+            console.log("Error in getDashboardDetail");
+            return {success:false, message:"Something went wrong in getDashboardDetailsUseCase"}
+          
+        }
+   }
+
 
 }
 

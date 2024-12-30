@@ -193,6 +193,33 @@ class ProviderBookingsController {
        }
   }
 
+  async getDashboardDetails(req:Request, res:Response, next:NextFunction){
+       try {
+           const providerId = req.query.providerId as string
+
+           if(!providerId){
+              res.status(HttpStatus.BAD_REQUEST).json({success:false, message:"Please give providerID"});
+              return
+           }
+           console.log("this is the providerId: ", providerId)
+           const response = await this.providerBookingsInteractor.getDashboardDetailsUseCase(providerId);
+           console.log('This is respose: ', response)  
+           if(!response.success){
+              res.status(HttpStatus.BAD_REQUEST).json({success:response.success, message:response.message})
+              return 
+           }
+           
+            res.status(HttpStatus.OK).json({success:response.success, message:response.message, dashboardData:response.dashboardData})
+
+
+        
+       } catch (error) {
+           console.log("Error in getDashboardDetails: ", error);
+           next(error)
+        
+       }
+  }
+
   
 
 

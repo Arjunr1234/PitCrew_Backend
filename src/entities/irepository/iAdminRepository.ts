@@ -25,6 +25,7 @@ interface IAdminRepository{
    addSubServiceRepo(data:ISubserviceData):Promise<{success:boolean, message?:string,subService?:ISubServiceData}>
    removeSubServiceRepo(serviceId:string, subServiceId:string):Promise<{success:boolean, message?:string}>
    getAllBookingsRepo():Promise<{success:boolean, message?:string, bookingData?:any}>
+   getDashboardDetailsRepo():Promise<{success:boolean, message?:string, dashboardData?:any}>
    
 }
 

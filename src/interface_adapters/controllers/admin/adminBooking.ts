@@ -27,6 +27,26 @@ class AdminBookingController{
             
            }
      }
+
+     
+    async getDashboardDetails(req:Request, res:Response, next:NextFunction){
+           try {
+
+            const response = await this.adminBookingInteractor.getDashboradDetailsUseCase();
+            
+            if(!response.success){
+                res.status(HttpStatus.BAD_REQUEST).json({success:response.success, message:response.message});
+                return
+            }
+             
+             res.status(HttpStatus.OK).json({success:response.success, message:response.message, dashboardData:response.dashboradData})
+                 
+           } catch (error) {
+              console.log("Error in getAllBookings controller");
+              next(error)
+            
+           }
+     }
 }
 
 export default AdminBookingController

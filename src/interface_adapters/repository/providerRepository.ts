@@ -1158,6 +1158,101 @@ async getAllBrandsRepo(providerId: string): Promise<{
       }
   }
 
+   async getDashboardDetailsRepo(providerId: string): Promise<{ success: boolean; message?: string; dashboardData?: any; }> {
+       try {
+
+            // console.log(("This is the providerId: ", providerId));
+
+            const bookings = await BookingModel.find({providerId})
+            const uniqueUserId = new Set(bookings.map(booking => booking.userId))
+            const totalDistinctUsers = uniqueUserId.size
+
+            const booking = await BookingModel.find({providerId, status:"Delivered"});
+            const totalRevenue = booking.reduce((sum, booking) => sum+booking.subTotal,0)
+
+            const pieData = await BookingModel.aggregate([
+              {
+                $match:{
+                  providerId:new mongoose.Types.ObjectId(providerId) 
+                },
+              },
+              {
+                $group:{
+                   _id:"$status",
+                   count:{$sum:1}
+                },
+                
+              },
+              {
+                $project:{
+                  _id:0,
+                  name:"$_id",
+                  count:1
+                }
+              }
+            ]);
+
+            const lineData = await BookingModel.aggregate([
+              {
+                  $match:{
+                    providerId:new mongoose.Types.ObjectId(providerId),
+                    status:"Delivered"
+                  }
+              },
+              {
+                $group: {
+                  _id: { month: { $month: "$bookingDate" } },
+                  totalRevenue: { $sum: "$subTotal" }, 
+                  bookingCount: { $sum: 1 } 
+                }
+              },
+              {
+                $project: {
+                  _id: 0, 
+                  name: { 
+                    $arrayElemAt: [
+                      ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+                      { $subtract: ["$_id.month", 1] } 
+                    ]
+                  },
+                  revenue: "$totalRevenue", 
+                  bookings: "$bookingCount" 
+                }
+              },
+              {
+                $sort: { name: 1 } 
+              }
+            ]);
+
+            const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+            const newlineData = lineData.sort((a, b) => months.indexOf(a.name) - months.indexOf(b.name))
+
+
+           
+
+            console.log("This si the booking: ", booking);
+            console.log("This si the totalNumber of users: ", totalDistinctUsers);
+            console.log("This is the totalRevenue: ", totalRevenue);
+            console.log("This is the pieChart: ", pieData);
+            console.log("This is the lineData: ", lineData)
+            const dashboardData = {
+              users:totalDistinctUsers,
+              totalRevenue:totalRevenue,
+              pieData,
+              lineData:newlineData
+            }
+            
+           
+             return {success:true, dashboardData}
+        
+       } catch (error) {
+           console.log("Error in getDashboardDetails Repo: ", error);
+           return {success:false, message:"Something went wrong in getDashboardDetails"}
+        
+       }
+   }
+
   
 }
 

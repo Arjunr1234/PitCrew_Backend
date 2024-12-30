@@ -172,8 +172,14 @@ const configSocketIO = (server:HttpServer) => {
            console.log("signaling;  sendIcecandidate: ", event);
            console.log("This is the sender: ", sender);
            
-           console.log("This is thhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh fucking callerId: ", id)
+           console.log("This is thhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh  callerId: ", id)
            io.to(getReceiverSocketId(id)).emit("receiveCandidate", {event})
+        })
+
+        socket.on("callEnded", ({to}) => {
+           console.log("Called is ended ");
+
+           io.to(getReceiverSocketId(to)).emit("receivingCallEnded")
         })
         
 

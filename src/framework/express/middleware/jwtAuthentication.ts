@@ -2,6 +2,7 @@ import { NextFunction, Request, Response, RequestHandler, response } from "expre
 import jwt from "jsonwebtoken";
 import userModel from "../../mongoose/model/userSchema";
 import providerModel from "../../mongoose/model/providerSchema";
+import HttpStatus from "../../../entities/rules/statusCodes";
 
 interface TokenPayload {
   roleId: string; 
@@ -67,11 +68,20 @@ const verification = (type: "user" | "provider" | "admin"): RequestHandler => {
             const isBlocked = type === "user"
               ? await isUserBlocked(decodedToken.roleId)
               : await isProviderBlocked(decodedToken.roleId);
+              ///////////////////////////////////////////////////////////////// new ////////////////////////////////
+
+            if(decodedToken.role !== type){
+               res.status(HttpStatus.UNAUTHORIZED).json({success:false, message:"Role is mismatching"});
+               return
+            }  
+
+            /////////////////////////////////////////////////////////////////////////////////////////////////////////
               
             if (isBlocked) {
               res.status(403).json({ message: `${type.charAt(0).toUpperCase() + type.slice(1)} is blocked.`, role: type });
               return;
             }
+
 
             return next();
           } else {

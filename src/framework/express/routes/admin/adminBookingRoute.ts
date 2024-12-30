@@ -10,7 +10,9 @@ const interactor = new AdminBookingInteractor(repository);
 const controller = new AdminBookingController(interactor);
 
 
-adminBookingRoute.get('/get-all-bookings', controller.getAllBookings.bind(controller))
+adminBookingRoute.get('/get-all-bookings', controller.getAllBookings.bind(controller));
+
+adminBookingRoute.get('/dashboard-details', controller.getDashboardDetails.bind(controller))
 
 
 
