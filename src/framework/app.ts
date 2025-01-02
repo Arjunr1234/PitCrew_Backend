@@ -17,10 +17,10 @@ dontenv.config()
 
 
 
-
+export const origin = "https://pitcrew.shop"
+// export const origin =  'http://localhost:5173', 
 app.use(cors({
-   // origin: 'http://localhost:5173', 
-    origin:'https://pitcrew.shop' ,
+    origin:origin,
     methods: 'GET,PUT,POST,PATCH,OPTIONS,DELETE',
     allowedHeaders: "Content-Type,Authorization",
     credentials: true,

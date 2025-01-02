@@ -2,6 +2,7 @@ import {Server as SocketServer} from 'socket.io';
 import {Server as HttpServer} from 'http';
 import ChatRepository from '../../interface_adapters/repository/chatRepository';
 import ChatInteractor from '../../usecases/chat/chat';
+import { origin } from '../app';
 
 
 const chatRepositoryinstance = new ChatRepository();
@@ -19,9 +20,14 @@ export const getReceiverSocketId = (userId:string) => {
 const configSocketIO = (server:HttpServer) => {
     try {
 
+      // io = new SocketServer(server, {
+      //   cors:{
+      //     origin:["http://localhost:5173"]
+      //   }
+      // });
       io = new SocketServer(server, {
         cors:{
-          origin:["http://localhost:5173"]
+          origin:[origin]
         }
       });
 
