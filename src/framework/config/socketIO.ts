@@ -27,7 +27,7 @@ const configSocketIO = (server:HttpServer) => {
       // });
       io = new SocketServer(server, {
         cors:{
-          origin:[origin]
+          origin:["https://www.pitcrew.shop"]
         }
       });
 
