@@ -19,7 +19,8 @@ dontenv.config()
 
 
 app.use(cors({
-    origin: 'http://localhost:5173',  
+   // origin: 'http://localhost:5173', 
+    origin:'https://pitcrew.shop' ,
     methods: 'GET,PUT,POST,PATCH,OPTIONS,DELETE',
     allowedHeaders: "Content-Type,Authorization",
     credentials: true,
