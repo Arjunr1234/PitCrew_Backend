@@ -17,20 +17,20 @@ dontenv.config()
 
 
 
-export const origin = "https://pitcrew.shop"
-console.log("innnnnn")
+export const origin = "https://www.pitcrew.shop"
 
-app.use((req, res, next) => {
-    console.log('Origin Header:', req.headers.origin); // Logs the Origin header
-    next();
-  });
+
+// app.use((req, res, next) => {
+//     console.log('Origin Header:', req.headers.origin); // Logs the Origin header
+//     next();
+//   });
+console.log("new arj 1")
   
 app.use(
     cors({
-      origin: 'https://www.pitcrew.shop', // Allow requests from your production domain
+      origin: origin, 
       methods: 'GET, POST, PUT, PATCH, DELETE, OPTIONS',
-    //   allowedHeaders: 'Content-Type, Authorization',
-      credentials: true, // Required for including cookies/auth headers
+      credentials: true, 
     })
   );
 
