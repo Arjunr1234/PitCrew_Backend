@@ -16,14 +16,11 @@ app.use(cookieParser())
 dontenv.config()
 
 
-
+//export const origin = "http://localhost:5173"
 export const origin = "https://www.pitcrew.shop"
 
 
-// app.use((req, res, next) => {
-//     console.log('Origin Header:', req.headers.origin); // Logs the Origin header
-//     next();
-//   });
+
 console.log("new arj 1")
   
 app.use(

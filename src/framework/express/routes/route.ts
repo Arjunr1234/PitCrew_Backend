@@ -6,7 +6,7 @@ import chatRouter from "./chatRoute";
 
 const   routes = (app: Application) => {
     
-    app.use('/api/user',(req,res,next)=>{console.log("in the server header",req.headers.origin);next()}, userRoute);
+    app.use('/api/user', userRoute);
     app.use('/api/provider',providerRouter)
     app.use('/api/admin', adminRouter)
     app.use('/api/chat', chatRouter)
