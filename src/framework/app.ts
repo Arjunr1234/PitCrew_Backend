@@ -20,8 +20,8 @@ dontenv.config()
 export const origin = "https://pitcrew.shop"
 
 app.use(cors({
-    origin:origin,
-    credentials: true,
+    origin:'*', 
+    credentials:true,
 }));
 
 
