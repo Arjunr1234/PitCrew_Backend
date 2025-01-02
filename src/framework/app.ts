@@ -18,7 +18,7 @@ dontenv.config()
 
 
 export const origin = "https://pitcrew.shop"
-
+console.log("innnnnn")
 
 app.use((req, res, next) => {
     console.log('Origin Header:', req.headers.origin); // Logs the Origin header
