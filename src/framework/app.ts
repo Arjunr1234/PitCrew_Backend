@@ -18,10 +18,9 @@ dontenv.config()
 
 
 export const origin = "https://pitcrew.shop"
-// export const origin =  'http://localhost:5173', 
+
 app.use(cors({
     origin:origin,
-    methods: 'GET,PUT,POST,PATCH,OPTIONS,DELETE',
     credentials: true,
 }));
 
