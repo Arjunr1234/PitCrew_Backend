@@ -22,7 +22,6 @@ export const origin = "https://pitcrew.shop"
 app.use(cors({
     origin:origin,
     methods: 'GET,PUT,POST,PATCH,OPTIONS,DELETE',
-    allowedHeaders: "Content-Type,Authorization",
     credentials: true,
 }));
 
