@@ -1,5 +1,6 @@
 import Stripe from 'stripe';
 import dotenv from 'dotenv';
+import { origin } from '../app';
 
 dotenv.config();
 
@@ -32,14 +33,15 @@ export async function makePayment(serviceData: any, bookId: any) {
      },
      quantity:1
   })
+  
 
   try {
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       line_items: line_items,
       mode: "payment",
-      success_url: `http://localhost:5173/payment-success?session_id={CHECKOUT_SESSION_ID}&book_id=${bookId}`,
-      cancel_url: "http://localhost:5173/payment-cancelled",
+      success_url: `${origin}/payment-success?session_id={CHECKOUT_SESSION_ID}&book_id=${bookId}`,
+      cancel_url: `${origin}/payment-cancelled`,
     });
 
     return session;
