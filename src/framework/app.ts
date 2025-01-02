@@ -19,10 +19,14 @@ dontenv.config()
 
 export const origin = "https://pitcrew.shop"
 
-app.use(cors({
-    origin:'*', 
-    credentials:true,
-}));
+app.use(
+    cors({
+      origin: 'https://www.pitcrew.shop', // Allow requests from your production domain
+      methods: 'GET, POST, PUT, PATCH, DELETE, OPTIONS',
+    //   allowedHeaders: 'Content-Type, Authorization',
+      credentials: true, // Required for including cookies/auth headers
+    })
+  );
 
 
 routes(app);
