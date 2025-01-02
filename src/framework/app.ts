@@ -19,6 +19,11 @@ dontenv.config()
 
 export const origin = "https://pitcrew.shop"
 
+app.use((req,res,next)=>{
+    console.log("in the server")
+    next()
+})
+
 app.use(
     cors({
       origin: 'https://www.pitcrew.shop', // Allow requests from your production domain
