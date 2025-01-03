@@ -16,8 +16,8 @@ app.use(cookieParser())
 dontenv.config()
 
 
-export const origin = "http://localhost:5173"
-//export const origin = "https://www.pitcrew.shop"
+//export const origin = "http://localhost:5173"
+export const origin = "https://www.pitcrew.shop"
 
 
 
