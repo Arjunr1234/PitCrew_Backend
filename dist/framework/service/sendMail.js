@@ -31,9 +31,9 @@ const sendMail = (email, content, subject) => __awaiter(void 0, void 0, void 0, 
             subject: subject ? subject : 'PitCrew',
             html: subject ? (0, emailTemplate_1.providerRejectionTemplate)(content) : (0, emailTemplate_1.otpTemplate)(content),
         };
-        
+        console.log("Mail options:", mailOptions);
         const info = yield transporter.sendMail(mailOptions);
-        
+        console.log('Email info.response :', info.response);
         return { success: true };
     }
     catch (error) {

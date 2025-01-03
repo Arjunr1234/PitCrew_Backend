@@ -23,8 +23,6 @@ const stripe = new stripe_1.default(process.env.STRIPE_SECRET_KEY, {
 });
 function makePayment(serviceData, bookId) {
     return __awaiter(this, void 0, void 0, function* () {
-        console.log("This is serviceData: ///////////////////////////: ", serviceData);
-        console.log("This is bookingId: ", bookId);
         const line_items = serviceData.services.map((service) => ({
             price_data: {
                 currency: "inr",

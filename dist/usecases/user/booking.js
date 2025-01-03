@@ -160,5 +160,16 @@ class UserBookingInteractor {
             }
         });
     }
+    clearNotificationUseCase(receiverId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const response = yield this.userRepository.clearNotificationController(receiverId);
+                return response;
+            }
+            catch (error) {
+                return { success: false, message: "Something went wrong in clear notification" };
+            }
+        });
+    }
 }
 exports.default = UserBookingInteractor;

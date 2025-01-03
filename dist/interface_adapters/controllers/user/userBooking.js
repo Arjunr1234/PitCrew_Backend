@@ -175,5 +175,24 @@ class UserBookingController {
             }
         });
     }
+    clearNotification(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const reciverId = req.query.receiverId;
+                console.log("This is the receiverId: ", reciverId);
+                if (!reciverId) {
+                    res.status(statusCodes_1.default.BAD_REQUEST).json({ success: false, message: "Please provider receiverId" });
+                }
+                const response = yield this.userBookingInteractor.clearNotificationUseCase(reciverId);
+                if (!response.success) {
+                    res.status(statusCodes_1.default.BAD_REQUEST).json({ success: false, message: response.message });
+                }
+                res.status(statusCodes_1.default.OK).json({ success: response.success, message: response.message });
+            }
+            catch (error) {
+                next(error);
+            }
+        });
+    }
 }
 exports.default = UserBookingController;

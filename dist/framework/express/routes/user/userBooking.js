@@ -22,4 +22,5 @@ userBookingRoute.get('/get-notification', controller.getNotification.bind(contro
 userBookingRoute.put('/cancell-booking', controller.cancellBooing.bind(controller));
 userBookingRoute.patch('/change-payment-status-success', (0, jwtAuthentication_1.default)(constants_1.role.user), controller.successfullPaymentStatusChange.bind(controller));
 userBookingRoute.patch('/notification-seen', controller.seenNotification.bind(controller));
+userBookingRoute.patch('/clear-notification', controller.clearNotification.bind(controller));
 exports.default = userBookingRoute;

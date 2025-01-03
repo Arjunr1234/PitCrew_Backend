@@ -18,9 +18,8 @@ app.use(express_1.default.urlencoded({ extended: true }));
 (0, socketIO_1.configSocketIO)(server);
 app.use((0, cookie_parser_1.default)());
 dotenv_1.default.config();
-//export const origin = "http://localhost:5173"
-exports.origin = "https://www.pitcrew.shop";
-console.log("new arj 1");
+exports.origin = "http://localhost:5173";
+//export const origin = "https://www.pitcrew.shop"
 app.use((0, cors_1.default)({
     origin: exports.origin,
     methods: 'GET, POST, PUT, PATCH, DELETE, OPTIONS',

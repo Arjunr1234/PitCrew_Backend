@@ -719,5 +719,23 @@ class UserRepository {
             }
         });
     }
+    clearNotificationController(receiverId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const result = yield notificationSchema_1.default.updateOne({ receiverId }, { $set: { notifications: [] } });
+                console.log("result", result);
+                if (result.modifiedCount > 0) {
+                    return { success: true, message: "Notifications cleared successfully" };
+                }
+                else {
+                    return { success: false, message: "No notifications found for the given receiverId" };
+                }
+            }
+            catch (error) {
+                console.error("Error in clearNotificationController:", error);
+                return { success: false, message: "Something went wrong in clearNotification" };
+            }
+        });
+    }
 }
 exports.default = UserRepository;
