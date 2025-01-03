@@ -21,12 +21,14 @@ userBookingRoute.post('/add-rating', controller.addRating.bind(controller));
 
 userBookingRoute.get('/check-avaliable-slot',verification(role.user), controller.checkAvaliableSlot.bind(controller));
 userBookingRoute.get('/get-all-bookings', controller.getAllBookings.bind(controller));
-userBookingRoute.get('/get-notification', controller.getNotification.bind(controller))
+userBookingRoute.get('/get-notification', controller.getNotification.bind(controller));
+
 
 userBookingRoute.put('/cancell-booking', controller.cancellBooing.bind(controller))
 
 userBookingRoute.patch('/change-payment-status-success',verification(role.user), controller.successfullPaymentStatusChange.bind(controller));
 userBookingRoute.patch('/notification-seen', controller.seenNotification.bind(controller));
+userBookingRoute.patch('/clear-notification', controller.clearNotification.bind(controller))
 
 
 

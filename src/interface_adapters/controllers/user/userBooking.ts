@@ -197,6 +197,30 @@ class UserBookingController{
         }
     }
 
+    async clearNotification(req:Request, res:Response, next:NextFunction){
+       try {
+          const reciverId = req.query.receiverId as string; 
+          console.log("This is the receiverId: ", reciverId)
+          if(!reciverId){
+            res.status(HttpStatus.BAD_REQUEST).json({success:false, message:"Please provider receiverId"})
+          }
+
+          const response = await this.userBookingInteractor.clearNotificationUseCase(reciverId)
+
+          if(!response.success){
+            res.status(HttpStatus.BAD_REQUEST).json({success:false, message:response.message})
+          }
+
+            res.status(HttpStatus.OK).json({success:response.success, message:response.message})
+        
+       } catch (error) {
+          next(error)
+        
+       }
+    }
+
 }
+
+
 
 export default UserBookingController

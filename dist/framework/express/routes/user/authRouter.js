@@ -1,0 +1,22 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
+const userRepository_1 = __importDefault(require("../../../../interface_adapters/repository/userRepository"));
+const mailer_1 = __importDefault(require("../../../service/mailer"));
+const auth_1 = __importDefault(require("../../../../usecases/user/auth"));
+const auth_2 = __importDefault(require("../../../../interface_adapters/controllers/user/auth"));
+const jwt_1 = __importDefault(require("../../../service/jwt"));
+const userAuthRouter = express_1.default.Router();
+const repository = new userRepository_1.default();
+const mailer = new mailer_1.default();
+const jwt = new jwt_1.default(process.env.ACCESS_TOKEN_KEY, process.env.REFRESH_TOKEN_KEY);
+const userAuthInteractor = new auth_1.default(repository, mailer, jwt);
+const controller = new auth_2.default(userAuthInteractor);
+userAuthRouter.post('/sendotp', controller.sendOtpController.bind(controller));
+userAuthRouter.post('/signup/verify-otp', controller.otpVerificationAndSignup.bind(controller));
+userAuthRouter.post('/login', controller.login.bind(controller));
+userAuthRouter.get('/logout', controller.logout.bind(controller));
+exports.default = userAuthRouter;

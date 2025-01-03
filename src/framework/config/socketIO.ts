@@ -27,15 +27,15 @@ const configSocketIO = (server:HttpServer) => {
       // });
       io = new SocketServer(server, {
         cors:{
-          origin:["https://www.pitcrew.shop"]
+          origin:["http://localhost:5173"]
         }
-      });
+      }); 
 
 
       io.on("connection", (socket) => {
            console.log("a connection is established")
            const userId = socket.handshake.query.userId;
-           console.log("This is the userId: {provider/user}: ", userId)
+          // console.log("This is the userId: {provider/user}: ", userId)
            if(userId !== undefined){
              userSocketMap[userId as string] = socket.id;
              onlineUser[userId as string] = socket.id
@@ -44,12 +44,12 @@ const configSocketIO = (server:HttpServer) => {
            io.emit("listOnlineUsers", onlineUser)
 
            socket.on("joinChatRoom", ({providerId, userId, online}) => {
-            console.log("Enteed into join chat room: ", providerId, userId, online)
+            
                  const roomName = [providerId, userId].sort().join("-");
                  socket.join(roomName)
 
                  if (online === "USER") {
-                  console.log("online Users (user): ", onlineUser)
+                  
                   const isProviderOnline = !!onlineUser[providerId];
                   io.to(roomName).emit(isProviderOnline ? "receiverIsOnline" : "receiverIsOffline", {
                     user_id: providerId,
@@ -57,7 +57,7 @@ const configSocketIO = (server:HttpServer) => {
                 }
 
                 if (online === "PROVIDER") {
-                  console.log("online Users (provider): ", onlineUser)
+                
                   const isUserOnline = !!onlineUser[userId];
                   io.to(roomName).emit(isUserOnline ? "receiverIsOnline" : "receiverIsOffline", {
                     user_id: userId,
@@ -68,7 +68,7 @@ const configSocketIO = (server:HttpServer) => {
 
           
           socket.on("typing", ({ userId, providerId, isTyping, typer }) => {
-            console.log("This is the status: ", isTyping);
+            
           
             
             const roomName = [providerId, userId].sort().join("-");
@@ -82,7 +82,7 @@ const configSocketIO = (server:HttpServer) => {
 
            socket.on("sendMessage", async ({messageDetails}) => {
                try {
-                  console.log("This si the messge: ", messageDetails)
+                  
                   let savedMessage: any  = null;
 
                   const connectionDetails:any  = await chatInteractorInstance.createChatUseCase(messageDetails);
@@ -106,8 +106,8 @@ const configSocketIO = (server:HttpServer) => {
                    const chatNotification = await chatInteractorInstance.createNotificationUseCase(messageDetails)
                    const userSocketId = getReceiverSocketId(messageDetails.receiverId)
                   io.to(chatRoom).emit("receiveMessage", savedMessage);
-                  console.log("This is userSocketId: ", userSocketId);
-                  console.log("This is chatNotificatioN: ", chatNotification.notification)
+                  
+                  
                   io.to(userSocketId).emit("receiveNotification", chatNotification.notification)
                 
                } catch (error) {
@@ -118,7 +118,7 @@ const configSocketIO = (server:HttpServer) => {
 
 
            socket.on("checkPersonIsOnline", async ({ userId, providerId, caller }) => {
-          //  console.log("Checking if person is online: ", { userId, providerId, caller });
+          
         
             
             let callerId = caller === 'user' ? userId : providerId;
@@ -130,7 +130,7 @@ const configSocketIO = (server:HttpServer) => {
             
             let onlineStatus = !!onlineUser[receiverId];
         
-           // console.log("callerId: ", callerId, "receiverId: ", receiverId);
+           
         
             if (!socketId) {
                 console.error("No valid socket ID found for caller!");
@@ -142,13 +142,13 @@ const configSocketIO = (server:HttpServer) => {
         });
 
         socket.on("createRoomForCall", ({userId, providerId, caller, callerData}) => {
-              console.log("userId: ",userId, "providerId: ", providerId, "caller: ", caller)
+              
               
               const callerId = caller === 'user' ? userId : providerId;
               const receiverId = caller === 'user' ? providerId : userId;
               const roomId = [receiverId, callerId].sort().join('_');
               socket.join(roomId + "");
-              console.log("Emitted to: ", receiverId)
+              
               io.to(getReceiverSocketId(receiverId)).emit('incommingCall', {success:true, receiverId, callerId, callerData });
         })
 
@@ -165,25 +165,21 @@ const configSocketIO = (server:HttpServer) => {
         });
 
         socket.on("sendOffer", ({receiverId, offer, callerId}) => {
-           console.log("Entered into sendeOffer to receiver socket offer: ", offer)
+           
            io.to(getReceiverSocketId(receiverId)).emit("sendOfferToReceiver", {offer, callerId})
         });
 
         socket.on("answer", ({answer, to}) => {
-          console.log('This is the answer to the caller: ', answer);
+          
           io.to(getReceiverSocketId(to)).emit("receiveAnswer", {answer})
         });
 
         socket.on("sendCandidate", ({event, id, sender }) => {
-           console.log("signaling;  sendIcecandidate: ", event);
-           console.log("This is the sender: ", sender);
            
-           console.log("This is thhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh  callerId: ", id)
            io.to(getReceiverSocketId(id)).emit("receiveCandidate", {event})
         })
 
         socket.on("callEnded", ({to}) => {
-           console.log("Called is ended ");
 
            io.to(getReceiverSocketId(to)).emit("receivingCallEnded")
         })

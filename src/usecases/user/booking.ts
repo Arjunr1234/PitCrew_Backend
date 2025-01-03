@@ -185,6 +185,17 @@ class UserBookingInteractor implements IUserBookingInteractor{
             
           }
       }
+
+    async  clearNotificationUseCase(receiverId: string): Promise<{ success: boolean; message?: string; }> {
+           try {
+             const response = await this.userRepository.clearNotificationController(receiverId);
+             return response
+            
+           } catch (error) {
+             return {success:false, message:"Something went wrong in clear notification"}
+            
+           }
+      }
    
 }
 

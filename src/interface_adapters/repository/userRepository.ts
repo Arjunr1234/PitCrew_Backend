@@ -875,7 +875,25 @@ async seenNotificationRepo(notificationId: string): Promise<{ success: boolean; 
   }
 }
 
-  
+async clearNotificationController(receiverId: string): Promise<{ success: boolean; message?: string; }> {
+  try {
+    
+    const result = await notificationModel.updateOne(
+      { receiverId }, 
+      { $set: { notifications: [] } } 
+    );
+    console.log("result", result)
+    if (result.modifiedCount > 0) {
+      return { success: true, message: "Notifications cleared successfully" };
+    } else {
+      return { success: false, message: "No notifications found for the given receiverId" };
+    }
+  } catch (error) {
+    console.error("Error in clearNotificationController:", error);
+    return { success: false, message: "Something went wrong in clearNotification" };
+  }
+}
+
 
 
 }

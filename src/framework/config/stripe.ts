@@ -10,8 +10,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
 
 export async function makePayment(serviceData: any, bookId: any) {
 
-    console.log("This is serviceData: ///////////////////////////: ", serviceData);
-    console.log("This is bookingId: ", bookId);
+   
   const line_items = serviceData.services.map((service: any) => ({
     price_data: {
       currency: "inr",

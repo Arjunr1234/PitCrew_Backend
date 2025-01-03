@@ -58,7 +58,7 @@ class ChatRepository implements IChatRepository{
               return {success:false, message:"Failed to get chat message"}
            }
 
-           return{success:true, chatData:findedChats}
+           return{success:true, chatData:findedChats} 
         
       } catch (error) {
           console.log("Error in getAllChatRepo: ", error);

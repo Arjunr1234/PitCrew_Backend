@@ -14,6 +14,7 @@ interface IUserBookingInteractor{
    addRatingUseCase(ratingData:IRatingData):Promise<{success:boolean, message?:string}>
    getNotificationUseCase(receiverId:string):Promise<{ success: boolean; message?: string; notificationData?: any; }>
    seenNotificationUseCase(notificationId:string):Promise<{success:boolean; message?:string}>
+   clearNotificationUseCase(receiverId:string):Promise<{success:boolean, message?:string}>
 }
 
 export default IUserBookingInteractor
